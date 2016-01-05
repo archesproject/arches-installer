@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Test Connection String</title>
+  </head>
+  <body>
+    <p>
+      host:
+      <input type="text" name="host" value="localhost" id="host">
+    </p>
+    <p>
+      port:
+      <input type="text" name="port" value="5432" id="port">
+    </p>
+    <p>
+      user:
+      <input type="text" name="user" value="postgres" id="user">
+    </p>
+    <p>
+      password:
+      <input type="password" name="password" value="" id="password">
+    </p>
+    <p>
+      postgis template name:
+      <input type="text" name="database" value="template_postgis_20" id="database">
+    </p>
+    <button id="test-connection">test connection</button>
+    <h1>
+      result: <span id="result"></span>
+    </h1>
+  </body>
+  <script type="text/javascript">
+    var $ = require('jquery');
+    $('#test-connection').click(function() {
+      var knex = require('knex')({
+        client: 'postgresql',
+        connection: {
+          host: $('#host').val(),
+          port: $('#port').val(),
+          user: $('#user').val(),
+          password: $('#password').val(),
+          database: $('#database').val(),
+          charset: 'UTF8_GENERAL_CI'
+        }
+      });
+      
+      knex.raw('select * from spatial_ref_sys limit 1').then(function () {
+        $('#result').text('yes');
+      }).catch(function () {
+        $('#result').text('no');
+      });
+    });
+  </script>
+</html>
