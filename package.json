@@ -1,5 +1,5 @@
 {
-  "name": "arches-admin",
+  "name": "arches-installer",
   "version": "0.1.0",
   "repository": "https://github.com/archesproject/arches-installer",
   "main": "main.js",

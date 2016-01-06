@@ -4,22 +4,21 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Arches v4.0 | Installation</title>
-
     <link href="app.css" rel="stylesheet">
   </head>
-
 
   <body>
   	<div class="effect mainnav-sm">
   		<div class="boxed">
   			<div class="boxed-content-wrapper">
-  				<div class="row">
+  				<div class="row" id="splash-container">
   					<div class="col-xs-6 col-xs-offset-3 logo-wrapper">
   						<div class="install-logo">
   							<img class="img-lg install-logo" src="assets/img/arches_logo.png" alt="arches logo">
   						</div>
-  						<div class="">
-  							<h1>Welcome to Arches
+  						<div>
+  							<h1>
+                  Welcome to Arches
                   <small>Version 4.0.0</small>
                 </h1>
   							<p class="text-2x">
@@ -31,6 +30,210 @@
   						</div>
   					</div>
   				</div>
+
+          <div class="row" id="wizard-container">
+            <div style="height: 100vh; width: 350px; background: #fff; padding: 0 0 0 12px; border-right: 1px solid #ddd;">
+  						<div class="nano-content">
+  							<ul class="nav nav-tabs nav-justified arches-install-menu" style="border-bottom: 1px solid #eee;">
+  								<li class="pad-lft">
+  									<h3> Install Arches </h3>
+  								</li>
+  							</ul>
+  							<div class="tab-content">
+  								<div class="tab-pane fade in active" id="tab-1">
+  									<div class="list-group bg-trans">
+  										<a id="db" href="install_dependencies.html" class="list-group-item active">
+  											<div class="media-left">
+  												<span class="icon-wrap icon-wrap-sm bg-primary icon-circle"><i class="fa fa-database"></i></span>
+  											</div>
+  											<div class="media-body">
+  												<div class="text-lg text-semibold">Dependencies</div>
+  												<span class="text-muted">Install/confirm required applications</span>
+  											</div>
+  										</a>
+  										<a id="geos" href="#" class="list-group-item">
+  											<div class="media-left">
+  												<span class="icon-wrap icon-wrap-sm bg-gray-dark icon-circle"><i class="fa fa-globe"></i></span>
+  											</div>
+  											<div class="media-body">
+  												<div class="text-lg">Install Arches Framework</div>
+  												<span class="text-muted">Install core Arches components</span>
+  											</div>
+  										</a>
+  										<a id="python" href="#" class="list-group-item">
+  											<div class="media-left">
+  												<span class="icon-wrap icon-wrap-sm bg-gray-dark icon-circle"><i class="fa fa-code"></i></span>
+  											</div>
+  											<div class="media-body">
+  												<div class="text-lg">Install Arches Applications</div>
+  												<span class="text-muted">Install or build an Arches app</span>
+  											</div>
+  										</a>
+  									</div>
+  								</div>
+  							</div>
+  						</div>
+  					</div>
+
+  					<div class="eq-box-md eq-no-panel" style="position: absolute; left: 350px; top: 0px; padding: 20px 40px 100px 5px;">
+  						<div class="panel" style="border: 1px solid #ddd; box-shadow: 3px 3px 5px #ddd;">
+  							<div class="eq-height clearfix">
+  								<div class="col-md-5 eq-box-md text-center box-vmiddle-wrap bg-primary">
+  									<div id="depend-tab-0" class="box-vmiddle pad-all" style="display: block; opacity: 1.0;">
+  										<h3 class="text-thin">Step 1: Install Database</h3>
+  										<span class="icon-wrap icon-wrap-lg icon-circle bg-trans-light">
+  											<i class="fa fa-database fa-5x text-primary"></i>
+  										</span>
+  										<p style="font-size: 1.15em; padding: 0 0 20px 0;">
+  											You'll need to install
+  												<span class="text-lg text-bold">
+  													<a class="text-primary" href="http://www.postgresql.org/download/" target="_blank">PostgreSQL 9.4</a>
+  													and
+  													<a class="text-primary" href="http://postgis.net/install/" target="_blank">PostGIS 2.0</a>
+  												</span>
+  											to run Arches.  Afterwards, enter the required connection information
+  										</p>
+  										<a class="btn btn-lg btn-primary btn-labeled fa fa-arrow-right" href="#" id="postgis-info-link">Learn More...</a>
+  									</div>
+
+  									<div id="depend-tab-1" class="box-vmiddle pad-all" style="display: none; opacity: 0;">
+  										<h3 class="text-thin">Step 2: Install GEOS</h3>
+  										<span class="icon-wrap icon-wrap-lg icon-circle bg-trans-light">
+  											<i class="fa fa-globe fa-5x text-primary"></i>
+  										</span>
+  										<p style="font-size: 1.15em; padding: 0 0 20px 0;">Arches uses <span class="text-lg text-bold"><a class="text-primary" href="http://trac.osgeo.org/geos/" target="_blank">GEOS</a></span> to help manage geospatial data.  Install GEOS then enter the path to your installation folder. </p>
+  										<a class="btn btn-lg btn-primary btn-labeled fa fa-arrow-right" href="#">Learn More...</a>
+  									</div>
+
+  									<div id="depend-tab-2" class="box-vmiddle pad-all" style="display: none; opacity: 0;">
+  										<h3 class="text-thin">Step 3: Install/Confirm Python</h3>
+  										<span class="icon-wrap icon-wrap-lg icon-circle bg-trans-light">
+  											<i class="fa fa-code fa-5x text-primary"></i>
+  										</span>
+  										<p style="font-size: 1.15em; padding: 0 0 20px 0;">Arches requires <span class="text-lg text-bold">Python v2.7.6</span>.  Confirm that you are running v2.7.6 then enter the path to your folder. </p>
+  										<a class="btn btn-lg btn-primary btn-labeled fa fa-arrow-right" href="#">Learn More...</a>
+  									</div>
+
+  									<div id="depend-tab-3" class="box-vmiddle pad-all" style="display: none; opacity: 0;">
+  										<h3 class="text-thin">Step 4: Install JDK</h3>
+  										<span class="icon-wrap icon-wrap-lg icon-circle bg-trans-light">
+  											<i class="fa fa-coffee fa-5x text-primary"></i>
+  										</span>
+  										<p style="font-size: 1.15em; padding: 0 0 20px 0;">You'll need to install a Java <span class="text-lg text-bold">JDK</span> to run Arches.  Afterwards, enter the path to your installation folder. </p>
+  										<a class="btn btn-lg btn-primary btn-labeled fa fa-arrow-right" href="#">Learn More...</a>
+  									</div>
+
+  								</div>
+
+  								<div class="col-md-7 eq-box-md eq-no-panel" style="padding-bottom: 30px;">
+  									<div id="dependencies">
+  										<ul class="row wz-step wz-icon-bw wz-nav-off mar-top" style="padding-bottom: 10px;">
+  											<li class="col-xs-3">
+  												<a data-toggle="tab" href="#db-tab">
+  													<span id="depend-icon-0" class="icon-wrap icon-wrap-sm bg-dark icon-circle"><i class="fa fa-database"></i></span>
+  													<p class="text-thin">Database</p>
+  												</a>
+  											</li>
+  											<li class="col-xs-3">
+  												<a data-toggle="tab" href="#geos-tab">
+  													<span id="depend-icon-1" class="icon-wrap icon-wrap-sm icon-circle bg-gray-dark"><i class="fa fa-globe"></i></span>
+  													<p class="text-thin">GEOS</p>
+  												</a>
+  											</li>
+  											<li class="col-xs-3">
+  												<a data-toggle="tab" href="#python-tab">
+  													<span id="depend-icon-2" class="icon-wrap icon-wrap-sm icon-circle bg-gray-dark"><i class="fa fa-code"></i></span>
+  													<p class="text-thin">Python</p>
+  												</a>
+  											</li>
+  											<li class="col-xs-3">
+  												<a data-toggle="tab" href="#jdk-tab">
+  													<span id="depend-icon-3" class="icon-wrap icon-wrap-sm icon-circle bg-gray-dark"><i class="fa fa-coffee"></i></span>
+  													<p class="text-thin">Java (JDK)</p>
+  												</a>
+  											</li>
+  										</ul>
+  										<div class="progress progress-xs">
+  											<div class="progress-bar progress-bar-primary"></div>
+  										</div>
+  										<form class="form-horizontal">
+  											<div class="panel-body">
+  												<div class="tab-content">
+  													<div id="db-tab" class="tab-pane">
+  														<div class="form-group">
+  															<label class="col-sm-3 control-label text-semibold" for="">User</label>
+  															<div class="col-sm-9">
+  																<input type="text" placeholder="admin account name" id="" class="form-control" data-bind="value: postgres.user">
+  															</div>
+  														</div>
+  														<div class="form-group">
+  															<label class="col-sm-3 control-label text-semibold" for="">Password</label>
+  															<div class="col-sm-9">
+  																<input type="password" placeholder="password" id="" class="form-control" data-bind="value: postgres.password">
+  															</div>
+  														</div>
+                              <div class="form-group">
+  															<label class="col-sm-3 control-label text-semibold" for="">Hostname</label>
+  															<div class="col-sm-9">
+  																<input type="text" placeholder="hostname" id="" class="form-control" data-bind="value: postgres.host">
+  															</div>
+  														</div>
+  														<div class="form-group">
+  															<label class="col-sm-3 control-label text-semibold" for="">Port</label>
+  															<div class="col-sm-9">
+  																<input type="text" placeholder="port" id="" class="form-control" data-bind="value: postgres.port">
+  															</div>
+  														</div>
+  														<div class="form-group">
+  															<label class="col-sm-3 control-label text-semibold" for="">PostGIS Template</label>
+  															<div class="col-sm-9">
+  																<input type="text" placeholder="template_postgis_20" id="" class="form-control" data-bind="value: postgres.postgisTemplate">
+  															</div>
+  														</div>
+                              <p style="display: none;" class="alert bg-success">Looks good!</p>
+                              <p style="display: none;" class="alert bg-danger">Something's not working...</p>
+  													</div>
+
+  													<div id="geos-tab" class="tab-pane fade">
+  														<div class="form-group" style="padding: 0 0 130px 0;">
+  															<label class="col-sm-3 control-label text-semibold" for="">Path</label>
+  															<div class="col-sm-9">
+  																<input type="text" placeholder="" id="" class="form-control">
+  															</div>
+  														</div>
+  													</div>
+
+  													<div id="python-tab" class="tab-pane">
+  														<div class="form-group" style="padding: 0 0 130px 0;">
+  															<label class="col-sm-3 control-label text-semibold" for="">Path</label>
+  															<div class="col-sm-9">
+  																<input type="text" placeholder="" id="" class="form-control">
+  															</div>
+  														</div>
+  													</div>
+
+  													<div id="jdk-tab" class="tab-pane">
+  														<div class="form-group" style="padding: 0 0 130px 0;">
+  															<label class="col-sm-3 control-label text-semibold" for="">Path</label>
+  															<div class="col-sm-9">
+  																<input type="text" placeholder="" id="" class="form-control">
+  															</div>
+  														</div>
+  													</div>
+  												</div>
+  											</div>
+  											<div class="pull-right pad-all">
+  												<button id="depend-prev" type="button" class="previous btn btn-primary">Previous</button>
+  												<button id="depend-next" type="button" class="next btn btn-primary" disabled="">Next</button>
+  												<button type="button" class="finish btn btn-success" disabled>Finish</button>
+  											</div>
+  										</form>
+  									</div>
+  								</div>
+  							</div>
+  						</div>
+  					</div>
+  				</div>
   			</div>
   		</div>
       <button id="scroll-top" class="btn">
@@ -38,6 +241,5 @@
       </button>
   	</div>
   </body>
-
   <script src="index.js"></script>
 </html>
