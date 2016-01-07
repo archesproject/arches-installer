@@ -163,31 +163,31 @@
   														<div class="form-group">
   															<label class="col-sm-3 control-label text-semibold" for="">User</label>
   															<div class="col-sm-9">
-  																<input type="text" placeholder="admin account name" id="" class="form-control" data-bind="value: postgres.user">
+  																<input type="text" placeholder="admin account name" id="" class="form-control" data-bind="value: postgres.user, valueUpdate: 'keyup'">
   															</div>
   														</div>
   														<div class="form-group">
   															<label class="col-sm-3 control-label text-semibold" for="">Password</label>
   															<div class="col-sm-9">
-  																<input type="password" placeholder="password" id="" class="form-control" data-bind="value: postgres.password">
+  																<input type="password" placeholder="password" id="" class="form-control" data-bind="value: postgres.password, valueUpdate: 'keyup'">
   															</div>
   														</div>
                               <div class="form-group">
   															<label class="col-sm-3 control-label text-semibold" for="">Hostname</label>
   															<div class="col-sm-9">
-  																<input type="text" placeholder="hostname" id="" class="form-control" data-bind="value: postgres.host">
+  																<input type="text" placeholder="hostname" id="" class="form-control" data-bind="value: postgres.host, valueUpdate: 'keyup'">
   															</div>
   														</div>
   														<div class="form-group">
   															<label class="col-sm-3 control-label text-semibold" for="">Port</label>
   															<div class="col-sm-9">
-  																<input type="text" placeholder="port" id="" class="form-control" data-bind="value: postgres.port">
+  																<input type="text" placeholder="port" id="" class="form-control" data-bind="value: postgres.port, valueUpdate: 'keyup'">
   															</div>
   														</div>
   														<div class="form-group">
   															<label class="col-sm-3 control-label text-semibold" for="">PostGIS Template</label>
   															<div class="col-sm-9">
-  																<input type="text" placeholder="template_postgis_20" id="" class="form-control" data-bind="value: postgres.postgisTemplate">
+  																<input type="text" placeholder="template_postgis_20" id="" class="form-control" data-bind="value: postgres.postgisTemplate, valueUpdate: 'keyup'">
   															</div>
   														</div>
                               <p style="display: none;" class="alert bg-success">Looks good!</p>

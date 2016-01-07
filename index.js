@@ -27,9 +27,11 @@ var testDbConnection = function() {
   knex.raw('select * from spatial_ref_sys limit 1').then(function () {
 		$('#db-tab .alert.bg-danger').hide();
 		$('#db-tab .alert.bg-success').show();
+		$('#depend-next').prop('disabled', false);
   }).catch(function () {
 		$('#db-tab .alert.bg-success').hide();
     $('#db-tab .alert.bg-danger').show();
+		$('#depend-next').prop('disabled', true);
   });
 }
 ko.computed(function() {
