@@ -31,3 +31,5 @@ npm run package-linux
 # package all
 npm run package-all
 ```
+
+Packaging for Windows outside of a Windows environment requires installing [Wine](https://www.winehq.org/) (see [here](https://github.com/maxogden/electron-packager#building-windows-apps-from-non-windows-platforms)).
