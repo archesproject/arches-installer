@@ -1,6 +1,6 @@
 Install dependencies:
 ```
-npm install && npm start
+npm install
 ```
 
 Run:
