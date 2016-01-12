@@ -2,47 +2,6 @@ var $ = require('jquery');
 var jQuery = $;
 var ko = require('knockout');
 var shell = require('shell');
-var vm = {
-	postgres: {
-		user: ko.observable('postgres'),
-		password: ko.observable('postgis'),
-		host: ko.observable('localhost'),
-		port: ko.observable('5432'),
-		postgisTemplate: ko.observable('template_postgis_20')
-	}
-};
-var testDbConnection = function() {
-  var knex = require('knex')({
-    client: 'postgresql',
-    connection: {
-      host: vm.postgres.host(),
-      port: vm.postgres.port(),
-      user: vm.postgres.user(),
-      password: vm.postgres.password(),
-      database: vm.postgres.postgisTemplate(),
-      charset: 'UTF8_GENERAL_CI'
-    }
-  });
-
-  knex.raw('select * from spatial_ref_sys limit 1').then(function () {
-		$('#db-tab .alert.bg-danger').hide();
-		$('#db-tab .alert.bg-success').show();
-		$('#depend-next').prop('disabled', false);
-  }).catch(function () {
-		$('#db-tab .alert.bg-success').hide();
-    $('#db-tab .alert.bg-danger').show();
-		$('#depend-next').prop('disabled', true);
-  });
-}
-ko.computed(function() {
-	vm.postgres.host();
-	vm.postgres.port();
-	vm.postgres.user();
-	vm.postgres.password();
-	vm.postgres.postgisTemplate();
-	testDbConnection();
-});
-testDbConnection();
 require('pace');
 require('bootstrap');
 require('fastclick');
@@ -51,6 +10,22 @@ require('switchery');
 require('bootstrap-select');
 require('./plugins/bootstrap-wizard/jquery.bootstrap.wizard.min')
 require('chosen');
+var postgres = require('./models/postgres')
+
+var vm = {
+	showSplash: true,
+	postgres: new postgres()
+};
+
+vm.postgres.on('success', function () {
+	$('#depend-next').prop('disabled', false);
+});
+
+vm.postgres.on('fail', function () {
+	$('#depend-next').prop('disabled', true);
+});
+
+vm.postgres.testConnection();
 
 $("#install-welcome").click(function(){
 	$('#splash-container').hide();

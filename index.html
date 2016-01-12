@@ -190,8 +190,8 @@
   																<input type="text" placeholder="template_postgis_20" id="" class="form-control" data-bind="value: postgres.postgisTemplate, valueUpdate: 'keyup'">
   															</div>
   														</div>
-                              <p style="display: none;" class="alert bg-success">Looks good!</p>
-                              <p style="display: none;" class="alert bg-danger">Something's not working...</p>
+                              <p style="display: none;" class="alert bg-success" data-bind="visible: postgres.ready()">Looks good!</p>
+                              <p style="display: none;" class="alert bg-danger" data-bind="visible: !postgres.ready()">Something's not working...</p>
   													</div>
 
   													<div id="geos-tab" class="tab-pane fade">
@@ -241,5 +241,5 @@
       </button>
   	</div>
   </body>
-  <script src="index.js"></script>
+  <script src="app.js"></script>
 </html>
