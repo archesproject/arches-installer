@@ -79,6 +79,7 @@ a.list-group-item:not(.active):hover {
   padding: 80px 0 100px 0
 }
 
-#wizard-container {
-  display: none;
+.progress-bar {
+  position: relative;
+  transition: all .5s;
 }

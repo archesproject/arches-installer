@@ -11,7 +11,7 @@
   	<div class="effect mainnav-sm">
   		<div class="boxed">
   			<div class="boxed-content-wrapper">
-  				<div class="row" id="splash-container">
+  				<div class="row" id="splash-container" data-bind="visible: showSplash()">
   					<div class="col-xs-6 col-xs-offset-3 logo-wrapper">
   						<div class="install-logo">
   							<img class="img-lg install-logo" src="assets/img/arches_logo.png" alt="arches logo">
@@ -26,12 +26,12 @@
   							</p>
   						</div>
   						<div class="welcome-wrapper">
-  							<button id="install-welcome" class="btn btn-dark btn-icon btn-circle icon-3x fa fa-long-arrow-right"></button>
+  							<button id="install-welcome" class="btn btn-dark btn-icon btn-circle icon-3x fa fa-long-arrow-right" data-bind="click: function () { showSplash(false); }"></button>
   						</div>
   					</div>
   				</div>
 
-          <div class="row" id="wizard-container">
+          <div class="row" id="wizard-container" data-bind="visible: !showSplash()">
             <div style="height: 100vh; width: 350px; background: #fff; padding: 0 0 0 12px; border-right: 1px solid #ddd;">
   						<div class="nano-content">
   							<ul class="nav nav-tabs nav-justified arches-install-menu" style="border-bottom: 1px solid #eee;">
@@ -79,7 +79,7 @@
   						<div class="panel" style="border: 1px solid #ddd; box-shadow: 3px 3px 5px #ddd;">
   							<div class="eq-height clearfix">
   								<div class="col-md-5 eq-box-md text-center box-vmiddle-wrap bg-primary">
-  									<div id="depend-tab-0" class="box-vmiddle pad-all" style="display: block; opacity: 1.0;">
+  									<div id="depend-tab-0" data-bind="visible: ($element.id.split('depend-tab-')[1]==currentStep())" class="depend-tab box-vmiddle pad-all">
   										<h3 class="text-thin">Step 1: Install Database</h3>
   										<span class="icon-wrap icon-wrap-lg icon-circle bg-trans-light">
   											<i class="fa fa-database fa-5x text-primary"></i>
@@ -93,10 +93,10 @@
   												</span>
   											to run Arches.  Afterwards, enter the required connection information
   										</p>
-  										<a class="btn btn-lg btn-primary btn-labeled fa fa-arrow-right" href="#" id="postgis-info-link">Learn More...</a>
+  										<a class="btn btn-lg btn-primary btn-labeled fa fa-arrow-right" href="#" id="postgis-info-link" data-bind="click: function() { openExternal('http://postgis.net/') }">Learn More...</a>
   									</div>
 
-  									<div id="depend-tab-1" class="box-vmiddle pad-all" style="display: none; opacity: 0;">
+  									<div id="depend-tab-1" data-bind="visible: ($element.id.split('depend-tab-')[1]==currentStep())" class="depend-tab box-vmiddle pad-all">
   										<h3 class="text-thin">Step 2: Install GEOS</h3>
   										<span class="icon-wrap icon-wrap-lg icon-circle bg-trans-light">
   											<i class="fa fa-globe fa-5x text-primary"></i>
@@ -105,7 +105,7 @@
   										<a class="btn btn-lg btn-primary btn-labeled fa fa-arrow-right" href="#">Learn More...</a>
   									</div>
 
-  									<div id="depend-tab-2" class="box-vmiddle pad-all" style="display: none; opacity: 0;">
+  									<div id="depend-tab-2" data-bind="visible: ($element.id.split('depend-tab-')[1]==currentStep())" class="depend-tab box-vmiddle pad-all">
   										<h3 class="text-thin">Step 3: Install/Confirm Python</h3>
   										<span class="icon-wrap icon-wrap-lg icon-circle bg-trans-light">
   											<i class="fa fa-code fa-5x text-primary"></i>
@@ -114,7 +114,7 @@
   										<a class="btn btn-lg btn-primary btn-labeled fa fa-arrow-right" href="#">Learn More...</a>
   									</div>
 
-  									<div id="depend-tab-3" class="box-vmiddle pad-all" style="display: none; opacity: 0;">
+  									<div id="depend-tab-3" data-bind="visible: ($element.id.split('depend-tab-')[1]==currentStep())" class="depend-tab box-vmiddle pad-all">
   										<h3 class="text-thin">Step 4: Install JDK</h3>
   										<span class="icon-wrap icon-wrap-lg icon-circle bg-trans-light">
   											<i class="fa fa-coffee fa-5x text-primary"></i>
@@ -130,31 +130,31 @@
   										<ul class="row wz-step wz-icon-bw wz-nav-off mar-top" style="padding-bottom: 10px;">
   											<li class="col-xs-3">
   												<a data-toggle="tab" href="#db-tab">
-  													<span id="depend-icon-0" class="icon-wrap icon-wrap-sm bg-dark icon-circle"><i class="fa fa-database"></i></span>
+  													<span id="depend-icon-0" data-bind="css: { 'bg-dark': ($element.id.split('depend-icon-')[1]==currentStep()) }" class="icon-wrap icon-wrap-sm icon-circle bg-gray-dark"><i class="fa fa-database"></i></span>
   													<p class="text-thin">Database</p>
   												</a>
   											</li>
   											<li class="col-xs-3">
   												<a data-toggle="tab" href="#geos-tab">
-  													<span id="depend-icon-1" class="icon-wrap icon-wrap-sm icon-circle bg-gray-dark"><i class="fa fa-globe"></i></span>
+  													<span id="depend-icon-1" data-bind="css: { 'bg-dark': ($element.id.split('depend-icon-')[1]==currentStep()) }" class="icon-wrap icon-wrap-sm icon-circle bg-gray-dark"><i class="fa fa-globe"></i></span>
   													<p class="text-thin">GEOS</p>
   												</a>
   											</li>
   											<li class="col-xs-3">
   												<a data-toggle="tab" href="#python-tab">
-  													<span id="depend-icon-2" class="icon-wrap icon-wrap-sm icon-circle bg-gray-dark"><i class="fa fa-code"></i></span>
+  													<span id="depend-icon-2" data-bind="css: { 'bg-dark': ($element.id.split('depend-icon-')[1]==currentStep()) }" class="icon-wrap icon-wrap-sm icon-circle bg-gray-dark"><i class="fa fa-code"></i></span>
   													<p class="text-thin">Python</p>
   												</a>
   											</li>
   											<li class="col-xs-3">
   												<a data-toggle="tab" href="#jdk-tab">
-  													<span id="depend-icon-3" class="icon-wrap icon-wrap-sm icon-circle bg-gray-dark"><i class="fa fa-coffee"></i></span>
+  													<span id="depend-icon-3" data-bind="css: { 'bg-dark': ($element.id.split('depend-icon-')[1]==currentStep()) }" class="icon-wrap icon-wrap-sm icon-circle bg-gray-dark"><i class="fa fa-coffee"></i></span>
   													<p class="text-thin">Java (JDK)</p>
   												</a>
   											</li>
   										</ul>
   										<div class="progress progress-xs">
-  											<div class="progress-bar progress-bar-primary"></div>
+  											<div class="progress-bar progress-bar-primary" data-bind="style: { 'width': stepProgress().width, 'left': stepProgress().left }"></div>
   										</div>
   										<form class="form-horizontal">
   											<div class="panel-body">
@@ -224,8 +224,7 @@
   											</div>
   											<div class="pull-right pad-all">
   												<button id="depend-prev" type="button" class="previous btn btn-primary">Previous</button>
-  												<button id="depend-next" type="button" class="next btn btn-primary" disabled="">Next</button>
-  												<button type="button" class="finish btn btn-success" disabled>Finish</button>
+  												<button id="depend-next" type="button" class="next btn btn-primary" data-bind="enable: enableNext, text: (finalStep() ? 'Finish' : 'Next'), css: { 'btn-primary': !finalStep(), 'btn-success': finalStep()}"></button>
   											</div>
   										</form>
   									</div>
