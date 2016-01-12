@@ -83,3 +83,34 @@ a.list-group-item:not(.active):hover {
   position: relative;
   transition: all .5s;
 }
+
+.wizard-side-bar {
+  height: 100vh;
+  width: 350px;
+  background: #fff;
+  padding: 0 0 0 12px;
+  border-right: 1px solid #ddd;
+}
+
+.wizard-main {
+  position: absolute;
+  left: 350px;
+  top: 0px;
+  padding: 20px 40px 100px 5px;
+}
+
+.info-panel {
+  border: 1px solid #ddd;
+  box-shadow: 3px 3px 5px #ddd;
+}
+
+.wizard-instructions {
+  font-size: 1.15em;
+  padding: 0 0 20px 0;
+}
+
+.wizard-form-panel { padding-bottom: 30px; }
+
+.wizard-icon-list { padding-bottom: 10px; }
+
+.wizard-form-group { padding: 0 0 130px 0; }
