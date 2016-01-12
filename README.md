@@ -6,19 +6,19 @@ Built using [Electron](http://electron.atom.io/).
 
 ## Install dependencies
 
-```
+```sh
 npm install
 ```
 
 ## Run
 
-```
+```sh
 npm start
 ```
 
 ## Package
 
-```
+```sh
 # package for osx
 npm run package-osx
 
