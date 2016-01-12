@@ -1,7 +1,13 @@
 {
   "name": "arches-installer",
   "version": "0.1.0",
-  "repository": "https://github.com/archesproject/arches-installer",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/archesproject/arches-installer.git"
+  },
+  "bugs": {
+    "url": "https://github.com/archesproject/arches-installer/issues"
+  },
   "main": "main.js",
   "scripts": {
     "start": "electron main.js",

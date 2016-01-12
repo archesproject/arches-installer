@@ -1,14 +1,23 @@
-Install dependencies:
+# Arches Installer
+
+A desktop application for OSX, Windows, and Linux to help install [Arches](https://github.com/archesproject/arches) and it's dependencies.
+
+Built using [Electron](http://electron.atom.io/).
+
+## Install dependencies
+
 ```
 npm install
 ```
 
-Run:
+## Run
+
 ```
 npm start
 ```
 
-Package:
+## Package
+
 ```
 # package for osx
 npm run package-osx
