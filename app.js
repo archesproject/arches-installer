@@ -17,10 +17,12 @@ vm.showSplash = ko.observable(true);
 vm.postgres = new postgres();
 vm.openExternal = shell.openExternal;
 vm.currentStep = ko.observable(0);
+
 var stepCount = $('.box-vmiddle').length;
 vm.finalStep = ko.computed(function () {
 	return (vm.currentStep() === stepCount-1);
 });
+
 vm.stepProgress = ko.computed(function () {
 	var width = 100/stepCount;
 	return {
@@ -28,11 +30,14 @@ vm.stepProgress = ko.computed(function () {
 		left: width * vm.currentStep()
 	};
 });
+
 vm.enableNext = ko.computed(function () {
 	var enabled = true;
 	var step = vm.currentStep();
-	if (step === 0) {
-		enabled = vm.postgres.ready();
+	switch (step) {
+		case 0:
+			enabled = vm.postgres.ready();
+			break;
 	}
 	return enabled;
 });
