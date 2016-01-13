@@ -5,7 +5,6 @@ var shell = require('shell');
 require('pace');
 require('bootstrap');
 require('fastclick');
-require('nifty');
 require('switchery');
 require('bootstrap-select');
 require('./plugins/bootstrap-wizard/jquery.bootstrap.wizard.min')
