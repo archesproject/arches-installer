@@ -18,7 +18,7 @@ vm.postgres = new postgres();
 vm.openExternal = shell.openExternal;
 vm.currentStep = ko.observable(0);
 
-var stepCount = $('.box-vmiddle').length;
+var stepCount = $('.depend-tab').length;
 vm.finalStep = ko.computed(function () {
 	return (vm.currentStep() === stepCount-1);
 });

@@ -114,3 +114,14 @@ a.list-group-item:not(.active):hover {
 .wizard-icon-list { padding-bottom: 10px; }
 
 .wizard-form-group { padding: 0 0 130px 0; }
+
+.validation-msg-wrapper {
+  position: relative;
+  height: 60px;
+}
+
+.validation-msg {
+  width: 100%;
+  position: absolute;
+  transition: all 350ms;
+}

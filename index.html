@@ -272,12 +272,14 @@
                                     data-bind="value: postgres.postgisTemplate, valueUpdate: 'keyup'">
   															</div>
   														</div>
-                              <p class="alert bg-success" data-bind="visible: postgres.ready()">
-                                Looks good!
-                              </p>
-                              <p class="alert bg-danger" data-bind="visible: !postgres.ready()">
-                                Something's not working...
-                              </p>
+                              <div class="validation-msg-wrapper">
+                                <p class="alert bg-success validation-msg" data-bind="style: { 'opacity': (postgres.ready() ? 1 : 0) }">
+                                  Looks good!
+                                </p>
+                                <p class="alert bg-danger validation-msg" data-bind="style: { 'opacity': (postgres.ready() ? 0 : 1) }">
+                                  Something's not working...
+                                </p>
+                              </div>
   													</div>
 
   													<div id="geos-tab" class="tab-pane fade">

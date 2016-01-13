@@ -49,9 +49,11 @@ module.exports = Backbone.Model.extend({
     db.raw('select * from spatial_ref_sys limit 1').then(function () {
       self.ready(true);
 		  self.trigger('success');
-    }).catch(function () {
+    }, function () {
       self.ready(false);
       self.trigger('fail');
+    }).finally(function () {
+      db.destroy();
     });
   }
 });
