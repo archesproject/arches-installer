@@ -26,8 +26,8 @@ vm.finalStep = ko.computed(function () {
 vm.stepProgress = ko.computed(function () {
 	var width = 100/stepCount;
 	return {
-		width: width,
-		left: width * vm.currentStep()
+		width: width + '%',
+		left: width * vm.currentStep() + '%'
 	};
 });
 
