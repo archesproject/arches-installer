@@ -9,13 +9,35 @@ require('switchery');
 require('bootstrap-select');
 require('./plugins/bootstrap-wizard/jquery.bootstrap.wizard.min')
 require('chosen');
+var dependency = require('./models/dependency')
 var postgres = require('./models/postgres')
 
 var vm = {};
 vm.showSplash = ko.observable(true);
 vm.postgres = new postgres();
+vm.postgres.testConnection();
+
 vm.openExternal = shell.openExternal;
 vm.currentStep = ko.observable(0);
+vm.geos = new dependency({
+	versionCmd: 'geos-config --version',
+	parseVersion: function (versionString) {
+		return versionString.split('.')[0]==='3'
+	}
+});
+
+vm.python = new dependency({
+	versionCmd: 'python --version',
+	// python incorrectly sends version string to stderr...
+	parseVersion: function (stdout, versionString) {
+		var versionInfo = versionString.split('Python ')[1].split('.');
+		return (versionInfo[0]==='2' && versionInfo[1]==='7');
+	}
+});
+
+vm.java = new dependency({
+	versionCmd: 'java -version'
+});
 
 var stepCount = $('.depend-tab').length;
 vm.finalStep = ko.computed(function () {
@@ -30,18 +52,12 @@ vm.stepProgress = ko.computed(function () {
 	};
 });
 
+var stepModels = [vm.postgres, vm.geos, vm.python, vm.java];
 vm.enableNext = ko.computed(function () {
-	var enabled = true;
 	var step = vm.currentStep();
-	switch (step) {
-		case 0:
-			enabled = vm.postgres.ready();
-			break;
-	}
-	return enabled;
+	return stepModels[step].ready();
 });
 
-vm.postgres.testConnection();
 
 $('#dependencies').bootstrapWizard({
 	tabClass: 'wz-steps',
