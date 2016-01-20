@@ -11,6 +11,7 @@ require('./plugins/bootstrap-wizard/jquery.bootstrap.wizard.min')
 require('chosen');
 var dependency = require('./models/dependency');
 var postgres = require('./models/postgres');
+var CommandRunner = require('./command-runner');
 
 var vm = {};
 vm.showSplash = ko.observable(true);
@@ -61,6 +62,35 @@ vm.enableNext = ko.computed(function () {
     return stepModels[step].ready();
 });
 
+vm.envPath = ko.observable('~/arches');
+vm.envPathReady = ko.computed(function () {
+    
+});
+vm.installArches = new CommandRunner([
+    {
+        description: 'Installing pip',
+        getCommand: function () {
+            return 'python assets/scripts/get-pip.py';
+        },
+        sudo: true
+    },{
+        description: 'Installing virtualenv',
+        getCommand: function () {
+            return 'python -m pip install virtualenv==1.11.4';
+        },
+        sudo: true
+    },{
+        description: 'Creating virtual environment',
+        getCommand: function () {
+            return 'python -m virtualenv ' + vm.envPath();
+        }
+    },{
+        description: 'Installing arches',
+        getCommand: function () {
+            return vm.envPath() + '/bin/python -m pip install arches';
+        }
+    }
+]);
 
 $('#dependencies').bootstrapWizard({
     tabClass: 'wz-steps',
