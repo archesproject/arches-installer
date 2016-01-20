@@ -11,7 +11,8 @@ require('./plugins/bootstrap-wizard/jquery.bootstrap.wizard.min')
 require('chosen');
 var dependency = require('./models/dependency');
 var postgres = require('./models/postgres');
-var CommandRunner = require('./command-runner');
+var command = require('./models/command');
+var CommandRunner = require('./models/command-runner');
 
 var vm = {};
 vm.showSplash = ko.observable(true);
@@ -64,32 +65,33 @@ vm.enableNext = ko.computed(function () {
 
 vm.envPath = ko.observable('~/arches');
 vm.envPathReady = ko.computed(function () {
-    
+    // TODO: verify that path is writable
+    var path = vm.envPath();
+    return true;
 });
 vm.installArches = new CommandRunner([
-    {
+    new command({
         description: 'Installing pip',
-        getCommand: function () {
-            return 'python assets/scripts/get-pip.py';
-        },
+        command: 'python assets/scripts/get-pip.py',
         sudo: true
-    },{
+    }),
+    new command({
         description: 'Installing virtualenv',
-        getCommand: function () {
-            return 'python -m pip install virtualenv==1.11.4';
-        },
+        command: 'python -m pip install virtualenv==1.11.4',
         sudo: true
-    },{
+    }),
+    new command({
         description: 'Creating virtual environment',
         getCommand: function () {
             return 'python -m virtualenv ' + vm.envPath();
         }
-    },{
+    }),
+    new command({
         description: 'Installing arches',
         getCommand: function () {
             return vm.envPath() + '/bin/python -m pip install arches';
         }
-    }
+    })
 ]);
 
 $('#dependencies').bootstrapWizard({
