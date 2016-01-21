@@ -6,8 +6,20 @@
         this.current = ko.observable(0);
         this.running = ko.observable(false);
         this.commands = commands;
-        this.success = ko.computed(function () {
+        this.currentCommand = ko.computed(function () {
+            return self.commands[self.current()];
+        });
+        this.complete = ko.computed(function () {
             return (self.current() === self.commands.length);
+        });
+        this.success = ko.computed(function () {
+            var success = true;
+            for (var i = 0; i < self.commands.length; i++) {
+                if (!self.commands[i].success()) {
+                    success = false;
+                }
+            }
+            return success;
         });
         this.process = null;
     };
@@ -16,8 +28,11 @@
         constructor: CommandRunner,
 
         start: function () {
-            this.running(true);
+            for (var i = 0; i < this.commands.length; i++) {
+                this.commands[i].complete(false);
+            }
             this.current(0);
+            this.running(true);
             this.next();
         },
 
@@ -37,7 +52,6 @@
                 this.end(true);
                 return;
             } else {
-                console.log(current, command.description + '...');
                 command.run(function() {
                     if (command.error()) {
                         self.end(true);

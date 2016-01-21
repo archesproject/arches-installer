@@ -2,6 +2,8 @@ var $ = require('jquery');
 var jQuery = $;
 var ko = require('knockout');
 var shell = require('shell');
+var path = require('path');
+var dialog = require('electron').remote.dialog;
 require('pace');
 require('bootstrap');
 require('fastclick');
@@ -16,6 +18,8 @@ var CommandRunner = require('./models/command-runner');
 
 var vm = {};
 vm.showSplash = ko.observable(true);
+vm.showDependencies = ko.observable(false);
+vm.showInstaller = ko.observable(false);
 vm.postgres = new postgres();
 vm.postgres.testConnection();
 
@@ -63,16 +67,18 @@ vm.enableNext = ko.computed(function () {
     return stepModels[step].ready();
 });
 
-vm.envPath = ko.observable('~/arches');
-vm.envPathReady = ko.computed(function () {
-    // TODO: verify that path is writable
-    var path = vm.envPath();
-    return true;
-});
+vm.envPath = ko.observable(false);
+vm.getEnvPath = function () {
+    var dir = dialog.showOpenDialog({ properties: [ 'openDirectory', 'createDirectory' ]});
+    if (dir) {
+        vm.envPath(dir[0]);
+    }
+};
+
 vm.installArches = new CommandRunner([
     new command({
         description: 'Installing pip',
-        command: 'python assets/scripts/get-pip.py',
+        command: 'python ' + path.normalize('assets/scripts/get-pip.py'),
         sudo: true
     }),
     new command({
@@ -89,7 +95,13 @@ vm.installArches = new CommandRunner([
     new command({
         description: 'Installing arches',
         getCommand: function () {
-            return vm.envPath() + '/bin/python -m pip install arches';
+            var folder = 'bin';
+            var prefix = 'source ';
+            if (process.platform === 'win32') {
+                folder = 'Scripts';
+                prefix = '';
+            }
+            return prefix + path.join(vm.envPath(), folder, 'activate') + ' && pip install arches';
         }
     })
 ]);

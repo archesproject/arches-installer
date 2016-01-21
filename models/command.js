@@ -3,12 +3,12 @@
     var ko = require('knockout');
     var sudoExec = require('electron-sudo').exec;
     var sudo = {
-        exec: function(cmd, callback) {
-            var options = {
+        exec: function(cmd, options, callback) {
+            sudoExec(cmd, {
                 name: 'Arches Installer',
-                icns: './assets/img/arches_logo.icns'
-            };
-            sudoExec(cmd, options, callback);
+                icns: './assets/img/arches_logo.icns',
+                options: options
+            }, callback);
         }
     };
     var cp = require('child_process');
@@ -17,6 +17,7 @@
         initialize: function (options) {
             var self = this;
             this.complete = ko.observable(false);
+            this.running = ko.observable(false);
             this.success = ko.observable();
             this.error = ko.observable();
             this.stdout = ko.observable();
@@ -34,7 +35,11 @@
         run: function (callback) {
             var self = this;
             var p = this.sudo ? sudo : cp;
-            this.process = p.exec(this.getCommand(), function(error, stdout, stderr) {
+            this.running(true);
+            this.process = p.exec(this.getCommand(), {maxBuffer: 1024 * 500}, function(error, stdout, stderr) {
+                self.running(false);
+                self.complete(true);
+                self.success(!error);
                 self.error(error);
                 self.stdout(stdout);
                 self.stderr(stderr);

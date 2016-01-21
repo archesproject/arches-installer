@@ -26,7 +26,7 @@
                             </p>
                         </div>
                         <div class="welcome-wrapper">
-                            <button id="install-welcome" class="btn btn-dark btn-icon btn-circle icon-3x fa fa-long-arrow-right" data-bind="click: function () { showSplash(false); }"></button>
+                            <button id="install-welcome" class="btn btn-dark btn-icon btn-circle icon-3x fa fa-long-arrow-right" data-bind="click: function () { showSplash(false); showDependencies(true); }"></button>
                         </div>
                     </div>
                 </div>
@@ -42,9 +42,9 @@
                             <div class="tab-content">
                                 <div class="tab-pane fade in active" id="tab-1">
                                     <div class="list-group bg-trans">
-                                        <a id="db" href="#" class="list-group-item active">
+                                        <a id="db" href="#" class="list-group-item" data-bind="css: {'active': showDependencies()}, click: function () { showDependencies(true); showInstaller(false); }">
                                             <div class="media-left">
-                                                <span class="icon-wrap icon-wrap-sm bg-primary icon-circle">
+                                                <span class="icon-wrap icon-wrap-sm icon-circle" data-bind="css: {'bg-primary': showDependencies(), 'bg-gray-dark': !showDependencies()}">
                                                     <i class="fa fa-database"></i>
                                                 </span>
                                             </div>
@@ -53,9 +53,9 @@
                                                 <span class="text-muted">Install/confirm required applications</span>
                                             </div>
                                         </a>
-                                        <a id="geos" href="#" class="list-group-item">
+                                        <a id="geos" href="#" class="list-group-item" data-bind="css: {'active': showInstaller()}, click: function () { showInstaller(true); showDependencies(false); }">
                                             <div class="media-left">
-                                                <span class="icon-wrap icon-wrap-sm bg-gray-dark icon-circle">
+                                                <span class="icon-wrap icon-wrap-sm icon-circle" data-bind="css: {'bg-primary': showInstaller(), 'bg-gray-dark': !showInstaller()}">
                                                     <i class="fa fa-globe"></i>
                                                 </span>
                                             </div>
@@ -81,7 +81,7 @@
                         </div>
                     </div>
 
-                    <div class="eq-box-md eq-no-panel wizard-main">
+                    <div class="eq-box-md eq-no-panel wizard-main" data-bind="visible: showDependencies()">
                         <div class="panel info-panel">
                             <div class="eq-height clearfix">
                                 <div class="col-md-5 eq-box-md text-center box-vmiddle-wrap bg-primary">
@@ -275,7 +275,11 @@
                                                 <button id="depend-prev" type="button" class="previous btn btn-primary">
                                                     Previous
                                                 </button>
-                                                <button id="depend-next" type="button" class="next btn btn-primary" data-bind="enable: enableNext, text: (finalStep() ? 'Finish' : 'Next'), css: { 'btn-primary': !finalStep(), 'btn-success': finalStep()}">
+                                                <button id="depend-next" type="button" class="next btn btn-primary" data-bind="enable: enableNext, visible: !finalStep()">
+                                                    Next
+                                                </button>
+                                                <button id="depend-finish" type="button" class="btn btn-success" data-bind="enable: enableNext, visible: finalStep(), click: function () { showDependencies(false); showInstaller(true); }">
+                                                    Finish
                                                 </button>
                                             </div>
                                         </form>
@@ -284,15 +288,38 @@
                             </div>
                         </div>
                     </div>
+                    <div class="eq-box-md eq-no-panel wizard-main" data-bind="visible: showInstaller()">
+                        <h2>Install Arches</h2>
+
+                        <div data-bind="visible: installArches.running() || installArches.complete()" class="panel list-group-item ">
+                            <ol data-bind="foreach: installArches.commands">
+                                <li data-bind="visible: running() || complete()">
+                                    <span data-bind="text: description + '...'"></span>
+                                    <i class="fa fa-spinner fa-spin" data-bind="visible: running()"></i>
+                                    <i class="fa fa-check" data-bind="visible: complete() && success()"></i>
+                                    <i class="fa fa-exclamation-circle" data-bind="visible: complete() && !success()"></i>
+                                </li>
+                            </ol>
+                        </div>
+
+                        <div class="alert" data-bind="visible: installArches.complete(), text: installArches.success() ? 'Success!' : 'Something went wrong...', css: { 'bg-success': installArches.success(), 'bg-danger': !installArches.success()}"></div>
+
+                        <div data-bind="visible: !installArches.running()">
+                            <div data-bind="visible: envPath()" class="list-group-item panel">
+                                <strong>path:</strong>
+                                <span data-bind="text: envPath()"></span>
+                            </div>
+
+                            <button class="btn btn-primary" data-bind="click: function () { getEnvPath() }">Choose Path</button>
+                            <button class="btn btn-primary" data-bind="enable: envPath, click: function () { installArches.start() }, text: installArches.complete() ? 'Again' : 'Start'"></button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
         <button id="scroll-top" class="btn">
             <i class="fa fa-chevron-up"></i>
         </button>
-    </div>
-    <div>
-        <button class="btn">start</button>
     </div>
 </body>
 <script src="app.js"></script>
