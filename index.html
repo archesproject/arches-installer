@@ -250,6 +250,14 @@
                                                                 <input type="text" class="form-control">
                                                             </div>
                                                         </div>
+                                                        <div class="validation-msg-wrapper">
+                                                            <p class="alert bg-success validation-msg" data-bind="style: { 'opacity': (geos.ready() ? 1 : 0) }">
+                                                                Looks good!
+                                                            </p>
+                                                            <p class="alert bg-danger validation-msg" data-bind="style: { 'opacity': (geos.ready() ? 0 : 1) }">
+                                                                Something's not working...
+                                                            </p>
+                                                        </div>
                                                     </div>
 
                                                     <div id="python-tab" class="tab-pane">
@@ -259,6 +267,14 @@
                                                                 <input type="text" class="form-control">
                                                             </div>
                                                         </div>
+                                                        <div class="validation-msg-wrapper">
+                                                            <p class="alert bg-success validation-msg" data-bind="style: { 'opacity': (python.ready() ? 1 : 0) }">
+                                                                Looks good!
+                                                            </p>
+                                                            <p class="alert bg-danger validation-msg" data-bind="style: { 'opacity': (python.ready() ? 0 : 1) }">
+                                                                Something's not working...
+                                                            </p>
+                                                        </div>
                                                     </div>
 
                                                     <div id="jdk-tab" class="tab-pane">
@@ -267,6 +283,14 @@
                                                             <div class="col-sm-9">
                                                                 <input type="text" class="form-control">
                                                             </div>
+                                                        </div>
+                                                        <div class="validation-msg-wrapper">
+                                                            <p class="alert bg-success validation-msg" data-bind="style: { 'opacity': (java.ready() ? 1 : 0) }">
+                                                                Looks good!
+                                                            </p>
+                                                            <p class="alert bg-danger validation-msg" data-bind="style: { 'opacity': (java.ready() ? 0 : 1) }">
+                                                                Something's not working...
+                                                            </p>
                                                         </div>
                                                     </div>
                                                 </div>
