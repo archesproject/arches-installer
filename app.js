@@ -26,9 +26,14 @@ vm.postgres.testConnection();
 vm.openExternal = shell.openExternal;
 vm.currentStep = ko.observable(0);
 vm.geos = new dependency({
-    versionCmd: 'geos-config --version',
+    versionCmd: process.platform==='win32' ? 'IF EXIST C:/OSGeo4W64/bin/geos_c.dll ECHO True' : 'geos-config --version',
     parseVersion: function (stdout) {
+      if (String(stdout).trim()==="True") {
+        return true;
+      }
+      else{
         return stdout.split('.')[0]==='3'
+      }
     }
 });
 
@@ -45,7 +50,14 @@ vm.python = new dependency({
 });
 
 vm.java = new dependency({
-    versionCmd: 'java -version'
+    versionCmd: 'java -version',
+    parseVersion: function (stdout, stderr) {
+      if (stderr && stderr.split('java version')[1]) {
+        var versionInfo = stderr.split('"')[1].split('.');
+        return (versionInfo[0]==='1' && versionInfo[1]==='7');
+      }
+      return false;
+    }
 });
 
 var stepCount = $('.depend-tab').length;
