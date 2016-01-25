@@ -3,16 +3,30 @@ const app = electron.app;
 const BrowserWindow = electron.BrowserWindow;
 
 var mainWindow = null;
+var env = 'production';
+process.argv.forEach(function (val, index, array) {
+    var argvItem = val.split('=');
+    if (argvItem[0]==='--env') {
+        env = argvItem[1];
+    }
+});
+
+app.getEnvName = function () {
+    return env;
+};
 
 app.on('window-all-closed', function() {
     app.quit();
 });
 
 app.on('ready', function() {
-    mainWindow = new BrowserWindow({width: 1200, height: 850});
+    var dev = (app.getEnvName() === 'development');
+    mainWindow = new BrowserWindow({width: (dev?1900:1200), height: 850});
     mainWindow.loadURL('file://' + __dirname + '/index.html');
 
-    // mainWindow.webContents.openDevTools();
+    if(dev) {
+        mainWindow.webContents.openDevTools();
+    }
 
     mainWindow.on('closed', function() {
         mainWindow = null;
