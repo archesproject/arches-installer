@@ -13,54 +13,168 @@ body {
 }
 
 .arches-install-menu {
-    height: 60px;
-    border-bottom: 1px solid #eee;
+	height: 60px;
+	border-bottom: 1px solid #eee;
 }
 
 .list-group.bg-trans .list-group-item:not(.active):not(.disabled) {
-    border-bottom: 1px solid #eee;
+	border-bottom: 1px solid #eee;
 }
 
 .list-group.bg-trans .list-group-item:not(.active):not(.disabled) {
-    background-color: rgba(0,0,0,0.05);
+	background-color: rgba(0,0,0,0.05);
 }
 
 .list-group.bg-trans a.list-group-item:hover:(.active) {
-    background-color: #fff;
+	background-color: #fff;
 }
 
 a.list-group-item:not(.active):hover {
-    cursor: pointer;
+	cursor: pointer;
 }
 
 .list-group-item.active, .list-group-item.active:hover, .list-group-item.active:focus {
-    background-color: #fff;
-    border-width: 0px;
-    border-bottom: 1px solid #eee;
-    border-top: 1px solid #eee;
-    color: #5f5f5f;
+	background-color: #fff;
+	border-width: 0px;
+	border-bottom: 1px solid #eee;
+	border-top: 1px solid #eee;
+	color: #5f5f5f;
+}
+
+.list-group-item {
+	border-right-width: 0px;
+}
+
+
+
+/* Form Classes                                    */
+.alert {
+	height: 60px;
+}
+
+.install-item-disabled {
+	background: #f9f9f9;
+	pointer-events: none;
+	cursor: default;
 }
 
 .install-instructions {
-    font-size: 15px;
+	font-size: 13px;
+	color: #8d8d8d;
+	margin-top: -20px;
+	line-height: 1.25;
+	margin-bottom: 5px;
 }
 
-.install-logo {
-    height: 350px;
-    width: 350px;
-    background-color: #fff;
-    display: table-cell;
-    vertical-align: middle;
-    border-radius: 50%;
-    border: 1px solid #ddd;
+.install-footer-message {
+	margin-top: 10px;
+	margin-bottom: 0px;
+	font-size: 12px;
+	font-weight: 400;
 }
 
-.install-logo img {
-    display: block;
-    margin-left: auto;
-    margin-right: auto;
-    height: 150px;
-    width: 150px;
+.install-help {
+	float: right;
+	margin-right: 20px;
+	margin-top: -17px;
+}
+
+.install-buttons {
+	margin-top: 10px;
+}
+
+.install-card-alert {
+	margin-bottom: 5px;
+}
+
+.install-progress-window {
+	margin-top: 20px;
+	box-shadow: none;
+	background: #f9f9f9;
+	margin-bottom: 0px;
+}
+
+.install-tab-title {
+	font-size: 14px;
+	margin-top: -3px;
+}
+
+.install-tab-disabled {
+	pointer-events: none;
+	cursor: default;
+}
+
+.install-switch {
+	font-size: 13px;
+	padding-left: 10px;
+}
+
+.install-link {
+	font-size: 13px;
+	color: steelblue;
+	padding-bottom: 3px;
+	padding-left: 5px;
+}
+
+.icon-bg-success {
+	background: #32BC96;
+}
+
+.icon-bg-fail {
+	background: #E14E33;
+}
+
+.alert-dependeny {
+	height: 60px;
+	margin-bottom: 5px;
+}
+
+.dependency-title {
+	font-size: 17px;
+}
+
+.dependency-message {
+	position: relative;
+	left: 40px;
+	top: -30px;
+	font-size: 13px;
+	height: 40px;
+}
+
+.dependency-footer {
+	height: 60px;
+}
+
+.btn-dependency {
+	margin-top: -5px;
+	float: right;
+	margin-right: 45px;
+}
+
+.btn-install-footer {
+	float: right;
+	margin-top: -28px;
+}
+
+.no-border {
+	margin-top: 15px;
+	margin-bottom: 5px;
+	border-top-width: 0px;
+}
+
+.tab-base .nav-tabs>li:not(.active)>a:hover {
+	border-color: #fff;
+	opacity: .95;
+    background-color: rgba(255,255,255,0.99);
+    border-bottom-color: transparent;
+    -webkit-transition: opacity, 0.3s;
+    transition: opacity, 0.3s;
+}
+
+.nav-tabs>li {
+    float: left;
+    margin-bottom: -4px;
+    margin-top: 3px;
 }
 
 #install-welcome {
@@ -69,7 +183,25 @@ a.list-group-item:not(.active):hover {
 
 .welcome-wrapper { padding: 30px 0 0 0; }
 
-.logo-wrapper { text-align: -webkit-center; }
+.splash-wrapper { text-align: -webkit-center; }
+
+.splash-logo {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    height: 150px;
+    width: 150px;
+}
+
+.logo-wrapper {
+    height: 350px;
+    width: 350px;
+    background-color: #fff;
+    display: table-cell;
+    vertical-align: middle;
+    border-radius: 50%;
+    border: 1px solid #ddd;
+}
 
 .boxed-content-wrapper {
     height: 100vh;

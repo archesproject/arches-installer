@@ -11,334 +11,319 @@
     <div class="effect mainnav-sm">
         <div class="boxed">
             <div class="boxed-content-wrapper">
-                <div class="row" id="splash-container" data-bind="visible: showSplash()">
-                    <div class="col-xs-6 col-xs-offset-3 logo-wrapper">
-                        <div class="install-logo">
-                            <img class="img-lg install-logo" src="assets/img/arches_logo.png" alt="arches logo">
-                        </div>
-                        <div>
-                            <h1>
-                                Welcome to Arches
-                                <small>Version 4.0.0</small>
-                            </h1>
-                            <p class="text-2x">
-                                This wizard will help you install Arches
-                            </p>
-                        </div>
-                        <div class="welcome-wrapper">
-                            <button id="install-welcome" class="btn btn-dark btn-icon btn-circle icon-3x fa fa-long-arrow-right" data-bind="click: function () { showSplash(false); showDependencies(true); }"></button>
-                        </div>
-                    </div>
-                </div>
+				<div class="row" id="splash-container" data-bind="visible: showSplash()">
+					<div class="col-xs-6 col-xs-offset-3 splash-wrapper">
+						<div class="logo-wrapper">
+							<img class="img-lg splash-logo" src="assets/img/arches_logo.png" alt="Sample Image">
+						</div>
+						<div class="" style="">
+							<h1>Welcome to Arches <small>Version 4.0.0</small></h1>
+							<p class="text-2x" style="">
+								This wizard will help you install Arches
+							</p>
+						</div>
+						<div class="welcome-wrapper">
+							<button id="install-welcome" class="btn btn-primary btn-labeled btn-lg fa fa-check" data-bind="click: function () { showSplash(false); showDependencies(true); }">Install Arches</button>
+						</div>
+					</div>
+				</div>
 
-                <div class="row" id="wizard-container" data-bind="visible: !showSplash()">
-                    <div class="wizard-side-bar">
-                        <div class="nano-content">
-                            <ul class="nav nav-tabs nav-justified arches-install-menu">
-                                <li class="pad-lft">
-                                    <h3> Install Arches </h3>
-                                </li>
-                            </ul>
-                            <div class="tab-content">
-                                <div class="tab-pane fade in active" id="tab-1">
-                                    <div class="list-group bg-trans">
-                                        <a id="db" href="#" class="list-group-item" data-bind="css: {'active': showDependencies()}, click: function () { showDependencies(true); showInstaller(false); }">
-                                            <div class="media-left">
-                                                <span class="icon-wrap icon-wrap-sm icon-circle" data-bind="css: {'bg-primary': showDependencies(), 'bg-gray-dark': !showDependencies()}">
-                                                    <i class="fa fa-database"></i>
-                                                </span>
-                                            </div>
-                                            <div class="media-body">
-                                                <div class="text-lg text-semibold">Dependencies</div>
-                                                <span class="text-muted">Install/confirm required applications</span>
-                                            </div>
-                                        </a>
-                                        <a id="geos" href="#" class="list-group-item" data-bind="css: {'active': showInstaller()}, click: function () { showInstaller(true); showDependencies(false); }">
-                                            <div class="media-left">
-                                                <span class="icon-wrap icon-wrap-sm icon-circle" data-bind="css: {'bg-primary': showInstaller(), 'bg-gray-dark': !showInstaller()}">
-                                                    <i class="fa fa-globe"></i>
-                                                </span>
-                                            </div>
-                                            <div class="media-body">
-                                                <div class="text-lg">Install Arches Framework</div>
-                                                <span class="text-muted">Install core Arches components</span>
-                                            </div>
-                                        </a>
-                                        <a id="python" href="#" class="list-group-item">
-                                            <div class="media-left">
-                                                <span class="icon-wrap icon-wrap-sm bg-gray-dark icon-circle">
-                                                    <i class="fa fa-code"></i>
-                                                </span>
-                                            </div>
-                                            <div class="media-body">
-                                                <div class="text-lg">Install Arches Applications</div>
-                                                <span class="text-muted">Install or build an Arches app</span>
-                                            </div>
-                                        </a>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                <div id="wizard-container" data-bind="visible: !showSplash()">
+    				<div class="row">
 
-                    <div class="eq-box-md eq-no-panel wizard-main" data-bind="visible: showDependencies()">
-                        <div class="panel info-panel">
-                            <div class="eq-height clearfix">
-                                <div class="col-md-5 eq-box-md text-center box-vmiddle-wrap bg-primary">
-                                    <div id="depend-tab-0" data-bind="visible: ($element.id.split('depend-tab-')[1]==currentStep())" class="depend-tab box-vmiddle pad-all">
-                                        <h3 class="text-thin">Step 1: Install Database</h3>
-                                        <span class="icon-wrap icon-wrap-lg icon-circle bg-trans-light">
-                                            <i class="fa fa-database fa-5x text-primary"></i>
-                                        </span>
-                                        <p class="wizard-instructions">
-                                            You'll need to install
-                                            <span class="text-lg text-bold">
-                                                <a class="text-primary" href="#" data-bind="click: function() { openExternal('http://www.postgresql.org/download/') }">
-                                                    PostgreSQL 9.4
-                                                </a>
-                                                and
-                                                <a class="text-primary" href="#" data-bind="click: function() { openExternal('http://postgis.net/install/') }">
-                                                    PostGIS 2.0
-                                                </a>
-                                            </span>
-                                            to run Arches.  Afterwards, enter the required connection information
-                                        </p>
-                                        <a class="btn btn-lg btn-primary btn-labeled fa fa-arrow-right" href="#" id="postgis-info-link" data-bind="click: function() { openExternal('http://postgis.net/') }">
-                                            Learn More...
-                                        </a>
-                                    </div>
+    					<!-- Form -->
+    					<div class="eq-box-md eq-no-panel" style="padding: 5px 20px 10px 20px; ">
 
-                                    <div id="depend-tab-1" data-bind="visible: ($element.id.split('depend-tab-')[1]==currentStep())" class="depend-tab box-vmiddle pad-all">
-                                        <h3 class="text-thin">Step 2: Install GEOS</h3>
-                                        <span class="icon-wrap icon-wrap-lg icon-circle bg-trans-light">
-                                            <i class="fa fa-globe fa-5x text-primary"></i>
-                                        </span>
-                                        <p class="wizard-instructions">
-                                            Arches uses
-                                            <span class="text-lg text-bold">
-                                                <a class="text-primary" href="#" data-bind="click: function() { openExternal('http://trac.osgeo.org/geos/') }">
-                                                    GEOS
-                                                </a>
-                                            </span>
-                                            to help manage geospatial data.  Install GEOS then enter the path to your installation folder.
-                                        </p>
-                                        <a class="btn btn-lg btn-primary btn-labeled fa fa-arrow-right" href="#">
-                                            Learn More...
-                                        </a>
-                                    </div>
+    						<div class="panel" style="border: 1px solid #ddd; margin-bottom: 0px;">
+    							<div class="panel-heading">
+    								<h3 class="panel-title dependency-title">
+    									Arches Installer <small> for v4.0 </small>
+    								</h3>
+    							</div>
 
-                                    <div id="depend-tab-2" data-bind="visible: ($element.id.split('depend-tab-')[1]==currentStep())" class="depend-tab box-vmiddle pad-all">
-                                        <h3 class="text-thin">Step 3: Install/Confirm Python</h3>
-                                        <span class="icon-wrap icon-wrap-lg icon-circle bg-trans-light">
-                                            <i class="fa fa-code fa-5x text-primary"></i>
-                                        </span>
-                                        <p class="wizard-instructions">
-                                            Arches requires
-                                            <span class="text-lg text-bold">Python v2.7.6</span>.
-                                            Confirm that you are running v2.7.6 then enter the path to your folder.
-                                        </p>
-                                        <a class="btn btn-lg btn-primary btn-labeled fa fa-arrow-right" href="#">
-                                            Learn More...
-                                        </a>
-                                    </div>
-
-                                    <div id="depend-tab-3" data-bind="visible: ($element.id.split('depend-tab-')[1]==currentStep())" class="depend-tab box-vmiddle pad-all">
-                                        <h3 class="text-thin">Step 4: Install JDK</h3>
-                                        <span class="icon-wrap icon-wrap-lg icon-circle bg-trans-light">
-                                            <i class="fa fa-coffee fa-5x text-primary"></i>
-                                        </span>
-                                        <p class="wizard-instructions">
-                                            You'll need to install a Java
-                                            <span class="text-lg text-bold">JDK</span>
-                                            to run Arches.  Afterwards, enter the path to your installation folder.
-                                        </p>
-                                        <a class="btn btn-lg btn-primary btn-labeled fa fa-arrow-right" href="#">
-                                            Learn More...
-                                        </a>
-                                    </div>
-
-                                </div>
-
-                                <div class="col-md-7 eq-box-md eq-no-panel wizard-form-panel">
-                                    <div id="dependencies">
-                                        <ul class="row wz-step wz-icon-bw wz-nav-off mar-top wizard-icon-list">
-                                            <li class="col-xs-3">
-                                                <a data-toggle="tab" href="#db-tab">
-                                                    <span id="depend-icon-0" data-bind="css: { 'bg-dark': ($element.id.split('depend-icon-')[1]==currentStep()) }" class="icon-wrap icon-wrap-sm icon-circle bg-gray-dark">
-                                                        <i class="fa fa-database"></i>
-                                                    </span>
-                                                    <p class="text-thin">Database</p>
-                                                </a>
+    							<div class="panel-body" style="padding: 0px 20px 0 10px;">
+    								<div class="tab-base" style="border: 0px solid #eee;">
+                                        <ol data-bind="foreach: installArches.commands">
+                                            <li data-bind="visible: running() || complete()">
+                                                <span data-bind="text: description + '...'"></span>
+                                                <i class="fa fa-spinner fa-spin" data-bind="visible: running()"></i>
+                                                <i class="fa fa-check" data-bind="visible: complete() && success()"></i>
+                                                <i class="fa fa-exclamation-circle" data-bind="visible: complete() && !success()"></i>
                                             </li>
-                                            <li class="col-xs-3">
-                                                <a data-toggle="tab" href="#geos-tab">
-                                                    <span id="depend-icon-1" data-bind="css: { 'bg-dark': ($element.id.split('depend-icon-')[1]==currentStep()) }" class="icon-wrap icon-wrap-sm icon-circle bg-gray-dark">
-                                                        <i class="fa fa-globe"></i>
-                                                    </span>
-                                                    <p class="text-thin">GEOS</p>
-                                                </a>
-                                            </li>
-                                            <li class="col-xs-3">
-                                                <a data-toggle="tab" href="#python-tab">
-                                                    <span id="depend-icon-2" data-bind="css: { 'bg-dark': ($element.id.split('depend-icon-')[1]==currentStep()) }" class="icon-wrap icon-wrap-sm icon-circle bg-gray-dark">
-                                                        <i class="fa fa-code"></i>
-                                                    </span>
-                                                    <p class="text-thin">Python</p>
-                                                </a>
-                                            </li>
-                                            <li class="col-xs-3">
-                                                <a data-toggle="tab" href="#jdk-tab">
-                                                    <span id="depend-icon-3" data-bind="css: { 'bg-dark': ($element.id.split('depend-icon-')[1]==currentStep()) }" class="icon-wrap icon-wrap-sm icon-circle bg-gray-dark">
-                                                        <i class="fa fa-coffee"></i>
-                                                    </span>
-                                                    <p class="text-thin">Java (JDK)</p>
-                                                </a>
-                                            </li>
-                                        </ul>
-                                        <div class="progress progress-xs">
-                                            <div class="progress-bar progress-bar-primary" data-bind="style: { 'width': stepProgress().width, 'left': stepProgress().left }">
-                                            </div>
-                                        </div>
-                                        <form class="form-horizontal">
-                                            <div class="panel-body">
-                                                <div class="tab-content">
-                                                    <div id="db-tab" class="tab-pane">
-                                                        <div class="form-group">
-                                                            <label class="col-sm-3 control-label text-semibold">User</label>
-                                                            <div class="col-sm-9">
-                                                                <input type="text" placeholder="admin account name" class="form-control" data-bind="value: postgres.user, valueUpdate: 'keyup'">
-                                                            </div>
-                                                        </div>
-                                                        <div class="form-group">
-                                                            <label class="col-sm-3 control-label text-semibold">Password</label>
-                                                            <div class="col-sm-9">
-                                                                <input type="password" placeholder="password" class="form-control" data-bind="value: postgres.password, valueUpdate: 'keyup'">
-                                                            </div>
-                                                        </div>
-                                                        <div class="form-group">
-                                                            <label class="col-sm-3 control-label text-semibold">Hostname</label>
-                                                            <div class="col-sm-9">
-                                                                <input type="text" placeholder="hostname" class="form-control" data-bind="value: postgres.host, valueUpdate: 'keyup'">
-                                                            </div>
-                                                        </div>
-                                                        <div class="form-group">
-                                                            <label class="col-sm-3 control-label text-semibold">Port</label>
-                                                            <div class="col-sm-9">
-                                                                <input type="text" placeholder="port" class="form-control" data-bind="value: postgres.port, valueUpdate: 'keyup'">
-                                                            </div>
-                                                        </div>
-                                                        <div class="form-group">
-                                                            <label class="col-sm-3 control-label text-semibold">PostGIS Template</label>
-                                                            <div class="col-sm-9">
-                                                                <input type="text" placeholder="template_postgis_20" class="form-control" data-bind="value: postgres.postgisTemplate, valueUpdate: 'keyup'">
-                                                            </div>
-                                                        </div>
-                                                        <div class="validation-msg-wrapper">
-                                                            <p class="alert bg-success validation-msg" data-bind="style: { 'opacity': (postgres.ready() ? 1 : 0) }">
-                                                                Looks good!
-                                                            </p>
-                                                            <p class="alert bg-danger validation-msg" data-bind="style: { 'opacity': (postgres.ready() ? 0 : 1) }">
-                                                                Something's not working...
-                                                            </p>
-                                                        </div>
-                                                    </div>
+                                        </ol>
 
-                                                    <div id="geos-tab" class="tab-pane fade">
-                                                        <div class="form-group wizard-form-group">
-                                                            <label class="col-sm-3 control-label text-semibold">Path</label>
-                                                            <div class="col-sm-9">
-                                                                <input type="text" class="form-control">
-                                                            </div>
-                                                        </div>
-                                                        <div class="validation-msg-wrapper">
-                                                            <p class="alert bg-success validation-msg" data-bind="style: { 'opacity': (geos.ready() ? 1 : 0) }">
-                                                                Looks good!
-                                                            </p>
-                                                            <p class="alert bg-danger validation-msg" data-bind="style: { 'opacity': (geos.ready() ? 0 : 1) }">
-                                                                Something's not working...
-                                                            </p>
-                                                        </div>
-                                                    </div>
+    									<!--Nav Tabs-->
+    									<ul class="nav nav-tabs" style="background: #f4f4f4; margin-left: 10px;" data-bind="foreach: tabs">
+    										<li data-bind="css: { active: active }, click: function () { if (enableTab()) { activateTab() } }">
+    											<a data-toggle="tab" class="install-tab-title" data-bind="attr: { href: tabLink }, css: { 'install-tab-disabled': !enableTab() }, text: title"></a>
+    										</li>
+    									</ul>
 
-                                                    <div id="python-tab" class="tab-pane">
-                                                        <div class="form-group wizard-form-group">
-                                                            <label class="col-sm-3 control-label text-semibold">Path</label>
-                                                            <div class="col-sm-9">
-                                                                <input type="text" class="form-control">
-                                                            </div>
-                                                        </div>
-                                                        <div class="validation-msg-wrapper">
-                                                            <p class="alert bg-success validation-msg" data-bind="style: { 'opacity': (python.ready() ? 1 : 0) }">
-                                                                Looks good!
-                                                            </p>
-                                                            <p class="alert bg-danger validation-msg" data-bind="style: { 'opacity': (python.ready() ? 0 : 1) }">
-                                                                Something's not working...
-                                                            </p>
-                                                        </div>
-                                                    </div>
+    									<div id="db-arches-app-alert" class="panel install-card-alert" style=""></div>
 
-                                                    <div id="jdk-tab" class="tab-pane">
-                                                        <div class="form-group wizard-form-group">
-                                                            <label class="col-sm-3 control-label text-semibold">Path</label>
-                                                            <div class="col-sm-9">
-                                                                <input type="text" class="form-control">
-                                                            </div>
-                                                        </div>
-                                                        <div class="validation-msg-wrapper">
-                                                            <p class="alert bg-success validation-msg" data-bind="style: { 'opacity': (java.ready() ? 1 : 0) }">
-                                                                Looks good!
-                                                            </p>
-                                                            <p class="alert bg-danger validation-msg" data-bind="style: { 'opacity': (java.ready() ? 0 : 1) }">
-                                                                Something's not working...
-                                                            </p>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="pull-right pad-all">
-                                                <button id="depend-prev" type="button" class="previous btn btn-primary">
-                                                    Previous
-                                                </button>
-                                                <button id="depend-next" type="button" class="next btn btn-primary" data-bind="enable: enableNext, visible: !finalStep()">
-                                                    Next
-                                                </button>
-                                                <button id="depend-finish" type="button" class="btn btn-success" data-bind="enable: enableNext, visible: finalStep(), click: function () { showDependencies(false); showInstaller(true); }">
-                                                    Finish
-                                                </button>
-                                            </div>
-                                        </form>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="eq-box-md eq-no-panel wizard-main" data-bind="visible: showInstaller()">
-                        <h2>Install Arches</h2>
+    									<!--Tabs Content-->
+    									<div class="tab-content" style="padding: 5px 10px 0 10px; box-shadow: none; min-height: 415px;">
 
-                        <div data-bind="visible: installArches.running() || installArches.complete()" class="panel list-group-item ">
-                            <ol data-bind="foreach: installArches.commands">
-                                <li data-bind="visible: running() || complete()">
-                                    <span data-bind="text: description + '...'"></span>
-                                    <i class="fa fa-spinner fa-spin" data-bind="visible: running()"></i>
-                                    <i class="fa fa-check" data-bind="visible: complete() && success()"></i>
-                                    <i class="fa fa-exclamation-circle" data-bind="visible: complete() && !success()"></i>
-                                </li>
-                            </ol>
-                        </div>
+    										<!-- Dependency Checks -->
+    										<div id="depend-tab" class="tab-pane fade active in" data-bind="visible: (getActiveTab().title==='Dependencies')">
+    											<div class="panel-body" style="padding: 20px 10px 20px 5px;">
+    												<p id="install-instructions" class="install-instructions">Arches expects that your computer is loaded with a core set of technologies including python, GEOS, and a Java Development Kit (JDK)</p>
 
-                        <div class="alert" data-bind="visible: installArches.complete(), text: installArches.success() ? 'Success!' : 'Something went wrong...', css: { 'bg-success': installArches.success(), 'bg-danger': !installArches.success()}"></div>
+    												<div id="python-alert" class="panel install-card-alert" style=""></div>
+    												<div id="geos-alert" class="panel install-card-alert" style=""></div>
+    												<div id="jdk-alert" class="panel install-card-alert" style=""></div>
 
-                        <div data-bind="visible: !installArches.running()">
-                            <div data-bind="visible: envPath()" class="list-group-item panel">
-                                <strong>path:</strong>
-                                <span data-bind="text: envPath()"></span>
-                            </div>
+    												<div class="install-buttons">
+    													<button id="dependencies" class="btn btn-primary btn-labeled btn-lg fa fa-binoculars">Start Dependency Check</button>
+    													<button id="dependency-next" class="btn btn-mint disabled btn-labeled btn-lg fa fa-arrow-right" style="">Next</button>
+    												</div>
+    											</div>
+    										</div>
 
-                            <button class="btn btn-primary" data-bind="click: function () { getEnvPath() }">Choose Path</button>
-                            <button class="btn btn-primary" data-bind="enable: envPath, click: function () { installArches.start() }, text: installArches.complete() ? 'Again' : 'Start'"></button>
-                        </div>
-                    </div>
-                </div>
+    										<!-- Db Checks -->
+    										<div id="db-tab" class="tab-pane fade active in" data-bind="visible: (getActiveTab().title==='Database')">
+    											<div class="panel-body" style="padding: 20px 10px 20px 5px;">
+    												<p id="install-instructions" class="install-instructions">Arches requires <a class="text-primary" href="http://www.postgresql.org/download/" target="_blank">PostgreSQL 9.4</a> and <a class="text-primary" href="http://postgis.net/install/" target="_blank">PostGIS 2.0</a>.  Please install the database and provide your connection parameters</p>
+
+    												<div id="db-connection-alert" class="panel install-card-alert" style=""></div>
+
+    												<form class="form-horizontal">
+    													<div class="panel-body">
+    														<div class="form-group">
+    															<label class="col-sm-3 control-label text-semibold" for="">User</label>
+    															<div class="col-sm-9 col-md-6 col-lg-4">
+    																<input type="" placeholder="Database Admin" id="" class="form-control">
+    															</div>
+    														</div>
+    														<div class="form-group">
+    															<label class="col-sm-3 control-label text-semibold" for="">Password</label>
+    															<div class="col-sm-9 col-md-6 col-lg-4">
+    																<input type="password" placeholder="password" id="" class="form-control">
+    															</div>
+    														</div>
+    														<div class="form-group">
+    															<label class="col-sm-3 control-label text-semibold" for="">Port</label>
+    															<div class="col-sm-9 col-md-6 col-lg-4">
+    																<input type="" placeholder="5432" id="" class="form-control">
+    															</div>
+    														</div>
+    														<div class="form-group">
+    															<label class="col-sm-3 control-label text-semibold" for="">PostGIS Template</label>
+    															<div class="col-sm-9 col-md-6 col-lg-4">
+    																<input type="" placeholder="template_postgis_20" id="" class="form-control">
+    															</div>
+    														</div>
+    													</div>
+    												</form>
+
+    												<div class="install-buttons">
+    													<button id="db-test-connection" class="btn btn-primary btn-labeled btn-lg fa fa-check">Test Connection</button>
+    													<button id="db-next" class="btn btn-mint disabled btn-labeled btn-lg fa fa-arrow-right" style="">Next</button>
+    												</div>
+    											</div>
+    										</div>
+
+    										<!-- Framework Install -->
+    										<div id="framework-tab" class="tab-pane fade active in" data-bind="visible: (getActiveTab().title==='Framework')">
+    											<div class="panel-body" style="padding: 20px 10px 20px 5px;">
+    												<p id="install-instructions" class="install-instructions">The Arches Framework includes core technologies and provides for key services such as data management, search/indexing, and thesaurus management.</p>
+
+    												<div id="db-arches-framework-alert" class="panel install-card-alert" style=""></div>
+
+    												<form class="form-horizontal">
+    													<div class="panel-body">
+
+    														<div class="input-group">
+    															<span class="input-group-btn" style="z-index: 500;">
+    																<span class="btn btn-default btn-file">
+    																	Browse... <input type="file">
+    																</span>
+    															</span>
+    															<input type="" placeholder="Installation folder for Arches..." class="form-control" style="margin-left: -78px; height: 40px; padding-left: 85px; border-radius: 2px;">
+    														</div>
+
+    													</div>
+    												</form>
+
+    												<div class="install-buttons">
+    													<button id="framework-install" class="btn btn-primary btn-labeled btn-lg fa fa-check">Install Arches Framework</button>
+    													<button id="framework-next" class="btn btn-mint disabled btn-labeled btn-lg fa fa-arrow-right" style="">Next</button>
+    												</div>
+
+    												<div id="framework-install-window" class="panel install-progress-window hidden" style="">
+    													<div id="" class="panel-body" style="padding: 10px 10px 20px 10px;">
+    														<dl>
+    															<dt>Installing Arches Framework</dt>
+    															<dd><i class="fa fa-check"></i> Installing django</dd>
+    															<dd><i class="fa fa-check"></i> Installing ElasticSearch</dd>
+    															<dd><i class="fa fa-check"></i> Another installation step completed</dd>
+    															<dd><i class="fa fa-times"></i> And another step completed, this time unsuccessfully</dd>
+    															<hr class="no-border" style="">
+    															<dt>Installation completed with no errors</dt>
+    														</dl>
+    													</div>
+    												</div>
+    											</div>
+    										</div>
+
+    										<!-- Arches App Selection -->
+    										<div id="select-tab" class="tab-pane fade">
+    											<p id="install-instructions" class="install-instructions" style="margin-top: 0px; padding-left: 5px;">Select an application to install:</p>
+
+    											<div id="select-arches-app-alert" class="panel install-card-alert" style=""></div>
+
+    											<div class="row" style="">
+    												<div class="col-sm-6">
+    													<div class="panel" style="border: 1px solid #ddd;">
+    														<div class="panel-bg-cover">
+    															<img class="img-responsive" src="img/thumbs/img3.jpg" alt="Image">
+    														</div>
+    														<div class="" style="padding: 10px 0 0 15px;">
+    															<div class="row">
+    																<div class="col-xs-12">
+    																	<h3 class="panel-media-heading">Blank Arches</h3>
+    																	<a href="#" class="btn-link">A "blank slate" to define a custom cultural heritage inventory</a>
+    																</div>
+    																<div class="col-xs-12 mar-top">
+    																	<button id="select-blank" class="btn btn-primary btn-labeled btn-lg fa fa-check">Select Blank Arches</button>
+    																</div>
+    															</div>
+    														</div>
+    														<div class="panel-body" style="height: 150px; overflow-y: hidden;">
+    															<h4>Blank Arches</h4>
+    															Choosing the Blank Application allows you to design your own Arches resources for managing your cultural heritage.  Or you can import existing resource definitions and modify them for your needs.
+    														</div>
+    													</div>
+    												</div>
+
+    												<div class="col-sm-6">
+    													<div class="panel" style="border: 1px solid #ddd;">
+    														<div class="panel-bg-cover">
+    															<img class="img-responsive" src="img/arches/install/arches-hip.png" alt="Image">
+    														</div>
+    														<div class="" style="padding: 10px 0 0 15px;">
+    															<div class="row">
+    																<div class="col-xs-12">
+    																	<h3 class="panel-media-heading">Arches-HIP</h3>
+    																	<a href="#" class="btn-link">An application for managing immovable cultural heritage</a>
+    																</div>
+    																<div class="col-xs-12 mar-top">
+    																	<button id="select-hip" class="btn btn-primary btn-labeled btn-lg fa fa-check">Select Arches-HIP</button>
+    																</div>
+    															</div>
+    														</div>
+    														<div class="panel-body" style="height: 150px; overflow-y: hidden;">
+    															<h4>About Arches-HIP</h4>
+    															This application models cultural heritage resources as: Historic Resources, Historic Resource Groups, Activities, Events, Actors (People or Groups), and Information Objects.
+    														</div>
+    													</div>
+    												</div>
+    											</div>
+    										</div>
+
+    										<!-- Arches App Installation -->
+    										<div id="install-tab" class="tab-pane fade">
+    											<h4 class="text-thin hidden">Install Arches-HIP</h4>
+
+    											<div id="install-arches-app-alert" class="panel install-card-alert" style=""></div>
+
+    											<div class="" style="padding-left: 5px;">
+    												<div class="input-group" style="">
+    													<span class="input-group-btn" style="z-index: 500;">
+    														<span class="btn btn-default btn-file">
+    															Browse... <input type="file">
+    														</span>
+    													</span>
+    													<input type="" placeholder="Installation folder for Arches-HIP..." class="form-control" style="margin-left: -78px; height: 40px; padding-left: 85px;">
+    												</div>
+    												<div class="pad-top install-switch" style="">
+    													<input id="load-thesauri" class="" type="checkbox" checked> Import default thesauri </input>
+    												</div>
+    												<div class="install-switch" style="padding-top: 5px;">
+    													<input id="load-data" class="" type="checkbox"> Import test dataset</input>
+    												</div>
+    												<div class="pad-top install-switch" style="padding-top: 5px;">
+    													<input id="load-search" class="" type="checkbox" checked> Use default search engine </input>
+    													<div id="elasticsearch-config" class="" style="display: none;">
+    														<p class="install-instructions" style="margin-top: 10px;">
+    															Arches installs Elasticsearch to support fast search and data retrieval.  If you want to use your own Elasticsearch cluster, enter the information below
+    														</p>
+    														<div class="">
+    															<input type="text" placeholder="ElasticSearch URL" class="form-control" id="es-url">
+    														</div>
+    														<div class="" style="padding: 5px 0 10px 0;">
+    															<input type="text" placeholder="ElasticSearch port" class="form-control" id="es-port">
+    														</div>
+
+    													</div>
+    												</div>
+    												<div class="install-buttons">
+    													<button id="install-app" class="btn btn-primary btn-labeled btn-lg fa fa-check">Install Arches-HIP</button>
+    													<button id="app-next" class="btn btn-mint disabled btn-labeled btn-lg fa fa-arrow-right" style="">Next</button>
+    												</div>
+    											</div>
+
+    											<div id="app-install-window" class="panel install-progress-window hidden" style="">
+    												<div id="" class="panel-body" style="padding: 10px 10px 20px 10px;">
+    													<dl>
+    														<dt>Installing Arches-HIP</dt>
+    														<dd><i class="fa fa-check"></i> Installing Heritage Resource</dd>
+    														<dd><i class="fa fa-check"></i> Installing Heritage Resource Group</dd>
+    														<dd><i class="fa fa-check"></i> Installing Activities</dd>
+    														<dd><i class="fa fa-check"></i> Installing Events</dd>
+    														<dd><i class="fa fa-check"></i> Installing Actors</dd>
+    														<dd><i class="fa fa-check"></i> Installing Information Objects</dd>
+    														<dd><i class="fa fa-check"></i> Installing xxx Thesaurus</dd>
+    														<hr class="no-border" style="">
+    														<dt>Installation completed with no errors</dt>
+    													</dl>
+    												</div>
+    											</div>
+    										</div>
+
+    										<!-- Web Config -->
+    										<div id="web-tab" class="tab-pane fade">
+    											<h4 class="text-thin" style="padding-left: 5px; margin-bottom: 5px;">Configure your web server</h4>
+
+    											<div id="web-arches-app-alert" class="panel install-card-alert" style=""></div>
+
+    											<div class="" style="padding-left: 5px;">
+    												<div class="" style="">
+    													<a id="" href="#" class="install-link" target="_blank"> Apache Configuration Instructions</a>
+    												</div>
+    												<div class="" style="">
+    													<a id="" href="#" class="install-link" target="_blank"> IIS Configuration Instructions</a>
+    												</div>
+    												<div class="pad-top install-switch" style="padding-left: 0px; margin-bottom: 20px;">
+    													<p id="install-instructions" class="install-instructions" style="margin-top: 0px; padding-left: 0px;">To confirm your installation (or for very small projects), you can use Arches own web server</p>
+
+    													<input id="web-preview" class="" style="" type="checkbox">
+    														<a id="" href="localhost:8000/index.html" class="" target="_blank">
+    															Preview Arches <small>(NOT recommended for production use)
+    														</a>
+    													</input>
+    												</div>
+    												<div class="install-buttons">
+    													<button id="install-finish" class="btn btn-primary btn-labeled btn-lg fa fa-check" style="">Finish</button>
+    												</div>
+    											</div>
+    										</div>
+    									</div>
+    								</div>
+
+    							</div>
+    							<div class="panel-footer dependency-footer">
+    								<div class="">
+    									<p id="footer-message" class="install-footer-message" data-bind="text: getActiveTab().description"></p>
+    									<a id="help-message" target="_blank" class="install-help" data-bind="attr: { href: getActiveTab().helpLink }">
+    										<i class="fa fa-question-circle fa-fw fa-lg"></i>Help
+    									</a>
+    								</div>
+    							</div>
+    						</div>
+    					</div>
+    				</div>
+    			</div>
             </div>
         </div>
         <button id="scroll-top" class="btn">

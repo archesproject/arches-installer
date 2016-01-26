@@ -15,6 +15,7 @@ var dependency = require('./models/dependency');
 var postgres = require('./models/postgres');
 var command = require('./models/command');
 var CommandRunner = require('./models/command-runner');
+var tab = require('./models/tab');
 
 var vm = {};
 vm.showSplash = ko.observable(true);
@@ -60,7 +61,82 @@ vm.java = new dependency({
     }
 });
 
-var stepCount = $('.depend-tab').length;
+var getPrevious = function () {
+    if (this.index > 0){
+        return vm.tabs[this.index-1];
+    }
+    return null;
+};
+var activateTab = function () {
+    for (var i = 0; i < vm.tabs.length; i++) {
+        vm.tabs[i].active(false);
+    }
+    this.active(true);;
+};
+vm.dependencies = [vm.geos, vm.python, vm.java];
+vm.tabs = [];
+vm.tabs.push(
+    new tab({
+        index: 0,
+        active: true,
+        title: 'Dependencies',
+        instructions: 'instructions',
+        description: 'Check for Arches dependencies',
+        helpLink: 'helpLink',
+        tabLink: '#depend-tab',
+        readyModel: {
+            ready: ko.computed(function () {
+                for (var i = 0; i < vm.dependencies.length; i++) {
+                    if (!vm.dependencies[i].ready()) {
+                        return false;
+                    }
+                }
+                return true;
+            })
+        },
+        getPrevious: getPrevious,
+        activateTab: activateTab
+    })
+);
+vm.tabs.push(
+    new tab({
+        index: 1,
+        title: 'Database',
+        instructions: 'instructions',
+        description: 'description',
+        helpLink: 'helpLink',
+        tabLink: '#db-tab',
+        readyModel: vm.postgres,
+        getPrevious: getPrevious,
+        activateTab: activateTab
+    })
+);
+vm.tabs.push(
+    new tab({
+        index: 2,
+        title: 'Framework',
+        instructions: 'instructions',
+        description: 'description',
+        helpLink: 'helpLink',
+        tabLink: '#framework-tab',
+        readyModel: null,
+        getPrevious: getPrevious,
+        activateTab: activateTab
+    })
+);
+vm.getActiveTab = ko.computed(function () {
+    var activeTab = vm.tabs[0];
+    for (var i = 0; i < vm.tabs.length; i++) {
+        if (vm.tabs[i].active()) {
+            activeTab = vm.tabs[i];
+        }
+    }
+    return activeTab;
+});
+
+var stepModels = [vm.postgres, vm.geos, vm.python, vm.java];
+
+var stepCount = stepModels.length;
 vm.finalStep = ko.computed(function () {
     return (vm.currentStep() === stepCount-1);
 });
@@ -73,7 +149,6 @@ vm.stepProgress = ko.computed(function () {
     };
 });
 
-var stepModels = [vm.postgres, vm.geos, vm.python, vm.java];
 vm.enableNext = ko.computed(function () {
     var step = vm.currentStep();
     return stepModels[step].ready();
@@ -117,17 +192,5 @@ vm.installArches = new CommandRunner([
         }
     })
 ]);
-
-$('#dependencies').bootstrapWizard({
-    tabClass: 'wz-steps',
-    nextSelector: '.next',
-    previousSelector: '.previous',
-    onTabClick: function() {
-        return false;
-    },
-    onTabShow: function(tab, navigation, index) {
-        vm.currentStep(index);
-    }
-});
 
 ko.applyBindings(vm);
