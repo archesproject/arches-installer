@@ -162,21 +162,22 @@ vm.getEnvPath = function () {
     }
 };
 
+
 vm.installArches = new CommandRunner([
     new command({
         description: 'Installing pip',
         command: 'python ' + path.normalize('assets/scripts/get-pip.py'),
-        sudo: true
+        sudo: process.platform!=='win32'
     }),
     new command({
         description: 'Installing virtualenv',
         command: 'python -m pip install virtualenv==1.11.4',
-        sudo: true
+        sudo: process.platform!=='win32'
     }),
     new command({
         description: 'Creating virtual environment',
         getCommand: function () {
-            return 'python -m virtualenv ' + vm.envPath();
+            return 'python -m virtualenv "' + vm.envPath() + '"';
         }
     }),
     new command({
@@ -188,7 +189,7 @@ vm.installArches = new CommandRunner([
                 folder = 'Scripts';
                 prefix = '';
             }
-            return prefix + path.join(vm.envPath(), folder, 'activate') + ' && pip install arches';
+            return prefix + '"' + path.join(vm.envPath(), folder, 'activate') + '"' + ' && pip install arches';
         }
     })
 ]);
