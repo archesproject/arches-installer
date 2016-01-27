@@ -5,15 +5,33 @@
         var self = this;
         this.current = ko.observable(0);
         this.running = ko.observable(false);
+        this.error = ko.observable(false);
         this.commands = commands;
         this.currentCommand = ko.computed(function () {
             return self.commands[self.current()];
         });
+        this.error = ko.computed(function () {
+            var error = false;
+            if (!self.running()) {
+                for (var i = 0; i < self.commands.length; i++) {
+                    if (self.commands[i].error()) {
+                        error = self.commands[i].error();
+                    }
+                }
+            }
+            return error;
+        });
         this.complete = ko.computed(function () {
+            if (self.error()) {
+                return true;
+            }
             return (self.current() === self.commands.length);
         });
         this.success = ko.computed(function () {
             var success = true;
+            if (self.running()) {
+                return false;
+            }
             for (var i = 0; i < self.commands.length; i++) {
                 if (!self.commands[i].success()) {
                     success = false;

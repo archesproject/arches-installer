@@ -1,4 +1,5 @@
 var $ = require('jquery');
+var _ = require('underscore');
 var jQuery = $;
 var ko = require('knockout');
 var shell = require('shell');
@@ -27,6 +28,7 @@ vm.postgres.testConnection();
 vm.openExternal = shell.openExternal;
 vm.currentStep = ko.observable(0);
 vm.geos = new dependency({
+    name: 'GEOS',
     versionCmd: process.platform==='win32' ? 'IF EXIST C:/OSGeo4W64/bin/geos_c.dll ECHO True' : 'geos-config --version',
     parseVersion: function (stdout) {
       if (String(stdout).trim()==="True") {
@@ -39,6 +41,7 @@ vm.geos = new dependency({
 });
 
 vm.python = new dependency({
+    name: 'Python 2.7.6',
     versionCmd: 'python --version',
     // python incorrectly sends version string to stderr...
     parseVersion: function (stdout, stderr) {
@@ -51,6 +54,7 @@ vm.python = new dependency({
 });
 
 vm.java = new dependency({
+    name: 'Java (JDK)',
     versionCmd: 'java -version',
     parseVersion: function (stdout, stderr) {
       if (stderr && stderr.split('java version')[1]) {
@@ -61,100 +65,33 @@ vm.java = new dependency({
     }
 });
 
-var getPrevious = function () {
-    if (this.index > 0){
-        return vm.tabs[this.index-1];
+vm.dependencies = [vm.python, vm.geos, vm.java];
+vm.dependencyCheckRunning = ko.observable(false);
+vm.checkDependencies = function () {
+    var currentIndex = 0;
+    vm.dependencyCheckRunning(true);
+    for (var i = 0; i < vm.dependencies.length; i++) {
+        vm.dependencies[i].checked(false);
     }
-    return null;
+    setTimeout(function () {
+        var check = function () {
+            if (currentIndex < vm.dependencies.length) {
+                vm.dependencies[currentIndex].check(check);
+                currentIndex += 1;
+            } else {
+                vm.dependencyCheckRunning(false);
+            }
+        };
+        check();
+    }, 1000);
 };
-var activateTab = function () {
-    for (var i = 0; i < vm.tabs.length; i++) {
-        vm.tabs[i].active(false);
-    }
-    this.active(true);;
-};
-vm.dependencies = [vm.geos, vm.python, vm.java];
-vm.tabs = [];
-vm.tabs.push(
-    new tab({
-        index: 0,
-        active: true,
-        title: 'Dependencies',
-        instructions: 'instructions',
-        description: 'Check for Arches dependencies',
-        helpLink: 'helpLink',
-        tabLink: '#depend-tab',
-        readyModel: {
-            ready: ko.computed(function () {
-                for (var i = 0; i < vm.dependencies.length; i++) {
-                    if (!vm.dependencies[i].ready()) {
-                        return false;
-                    }
-                }
-                return true;
-            })
-        },
-        getPrevious: getPrevious,
-        activateTab: activateTab
-    })
-);
-vm.tabs.push(
-    new tab({
-        index: 1,
-        title: 'Database',
-        instructions: 'instructions',
-        description: 'description',
-        helpLink: 'helpLink',
-        tabLink: '#db-tab',
-        readyModel: vm.postgres,
-        getPrevious: getPrevious,
-        activateTab: activateTab
-    })
-);
-vm.tabs.push(
-    new tab({
-        index: 2,
-        title: 'Framework',
-        instructions: 'instructions',
-        description: 'description',
-        helpLink: 'helpLink',
-        tabLink: '#framework-tab',
-        readyModel: null,
-        getPrevious: getPrevious,
-        activateTab: activateTab
-    })
-);
-vm.getActiveTab = ko.computed(function () {
-    var activeTab = vm.tabs[0];
-    for (var i = 0; i < vm.tabs.length; i++) {
-        if (vm.tabs[i].active()) {
-            activeTab = vm.tabs[i];
-        }
-    }
-    return activeTab;
+vm.checkDependencies()
+
+var envPathStr = localStorage.getItem('envPath');
+vm.envPath = ko.observable(envPathStr ? envPathStr : '');
+vm.envPath.subscribe(function(newValue) {
+    localStorage.setItem('envPath', newValue);
 });
-
-var stepModels = [vm.postgres, vm.geos, vm.python, vm.java];
-
-var stepCount = stepModels.length;
-vm.finalStep = ko.computed(function () {
-    return (vm.currentStep() === stepCount-1);
-});
-
-vm.stepProgress = ko.computed(function () {
-    var width = 100/stepCount;
-    return {
-        width: width + '%',
-        left: width * vm.currentStep() + '%'
-    };
-});
-
-vm.enableNext = ko.computed(function () {
-    var step = vm.currentStep();
-    return stepModels[step].ready();
-});
-
-vm.envPath = ko.observable(false);
 vm.getEnvPath = function () {
     var dir = dialog.showOpenDialog({ properties: [ 'openDirectory', 'createDirectory' ]});
     if (dir) {
@@ -193,5 +130,98 @@ vm.installArches = new CommandRunner([
         }
     })
 ]);
+
+vm.tabs = [];
+var tabDefaults = function () {
+    return {
+        index: vm.tabs.length,
+        getPrevious: function () {
+            if (this.index > 0){
+                return vm.tabs[this.index-1];
+            }
+            return null;
+        },
+        activateTab: function () {
+            for (var i = 0; i < vm.tabs.length; i++) {
+                vm.tabs[i].active(false);
+            }
+            this.active(true);;
+        }
+    }
+};
+vm.tabs.push(
+    new tab(_.extend({
+        active: true,
+        title: 'Dependencies',
+        description: 'Check for Arches dependencies',
+        tabLink: '#depend-tab',
+        readyModel: {
+            ready: ko.computed(function () {
+                for (var i = 0; i < vm.dependencies.length; i++) {
+                    if (!vm.dependencies[i].ready()) {
+                        return false;
+                    }
+                }
+                return true;
+            })
+        }
+    }, tabDefaults()))
+);
+vm.tabs.push(
+    new tab(_.extend({
+        title: 'Database',
+        description: 'Configure Arches database connection',
+        tabLink: '#db-tab',
+        readyModel: vm.postgres
+    }, tabDefaults()))
+);
+vm.tabs.push(
+    new tab(_.extend({
+        title: 'Framework',
+        description: 'Install the Arches framework',
+        tabLink: '#framework-tab',
+        readyModel: {
+            ready: vm.installArches.success
+        }
+    }, tabDefaults()))
+);
+vm.tabs.push(
+    new tab(_.extend({
+        title: 'Select Application',
+        description: 'Select an Arches application',
+        tabLink: '#select-tab'
+    }, tabDefaults()))
+);
+vm.tabs.push(
+    new tab(_.extend({
+        title: 'Install Application',
+        description: 'Install Arches application',
+        tabLink: '#install-tab'
+    }, tabDefaults()))
+);
+vm.tabs.push(
+    new tab(_.extend({
+        title: 'Web Server',
+        description: 'Run or configure Arches web server',
+        tabLink: '#web-tab'
+    }, tabDefaults()))
+);
+
+vm.getActiveTab = ko.computed(function () {
+    var activeTab = vm.tabs[0];
+    for (var i = 0; i < vm.tabs.length; i++) {
+        if (vm.tabs[i].active()) {
+            activeTab = vm.tabs[i];
+        }
+    }
+    return activeTab;
+});
+
+vm.nextTab = function () {
+    var active = vm.getActiveTab();
+    if (active.index < vm.tabs.length-1) {
+        vm.tabs[active.index+1].activateTab();
+    }
+};
 
 ko.applyBindings(vm);

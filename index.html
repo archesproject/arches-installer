@@ -28,13 +28,13 @@
 					</div>
 				</div>
 
-                <div id="wizard-container" data-bind="visible: !showSplash()">
-    				<div class="row">
+                <div id="wizard-container" data-bind="visible: !showSplash()" style="height:100%;">
+    				<div class="row" style="height:100%;">
 
     					<!-- Form -->
-    					<div class="eq-box-md eq-no-panel" style="padding: 5px 20px 10px 20px; ">
+    					<div class="eq-box-md eq-no-panel" style="padding: 5px 20px 10px 20px; height:100%;">
 
-    						<div class="panel" style="border: 1px solid #ddd; margin-bottom: 0px;">
+    						<div class="panel" style="border: 1px solid #ddd; margin-bottom: 0px; height:100%; position:relative;">
     							<div class="panel-heading">
     								<h3 class="panel-title dependency-title">
     									Arches Installer <small> for v4.0 </small>
@@ -43,15 +43,6 @@
 
     							<div class="panel-body" style="padding: 0px 20px 0 10px;">
     								<div class="tab-base" style="border: 0px solid #eee;">
-                                        <ol data-bind="foreach: installArches.commands">
-                                            <li data-bind="visible: running() || complete()">
-                                                <span data-bind="text: description + '...'"></span>
-                                                <i class="fa fa-spinner fa-spin" data-bind="visible: running()"></i>
-                                                <i class="fa fa-check" data-bind="visible: complete() && success()"></i>
-                                                <i class="fa fa-exclamation-circle" data-bind="visible: complete() && !success()"></i>
-                                            </li>
-                                        </ol>
-
     									<!--Nav Tabs-->
     									<ul class="nav nav-tabs" style="background: #f4f4f4; margin-left: 10px;" data-bind="foreach: tabs">
     										<li data-bind="css: { active: active }, click: function () { if (enableTab()) { activateTab() } }">
@@ -69,56 +60,103 @@
     											<div class="panel-body" style="padding: 20px 10px 20px 5px;">
     												<p id="install-instructions" class="install-instructions">Arches expects that your computer is loaded with a core set of technologies including python, GEOS, and a Java Development Kit (JDK)</p>
 
-    												<div id="python-alert" class="panel install-card-alert" style=""></div>
-    												<div id="geos-alert" class="panel install-card-alert" style=""></div>
-    												<div id="jdk-alert" class="panel install-card-alert" style=""></div>
+                                                    <div data-bind="foreach: dependencies">
+                                                        <div class="panel install-card-alert">
+                                                            <div class="panel-alert">
+                                                                <div class="alert-wrap" data-bind="css: {  'in' : !running() && checked(), 'hidden': running() || !checked() }">
+                                                                    <div class="alert" role="alert" data-bind="css: { 'alert-mint': ready(), 'alert-danger': !ready() }">
+                                                                        <div class="media">
+                                                                            <span class="icon-wrap icon-circle" data-bind="css: { 'icon-bg-success': ready(), 'icon-bg-fail': !ready() }">
+                                                                                <i class="fa fa-check" data-bind="css: { 'fa-check': ready(), 'fa-times': !ready() }">
+                                                                                </i>
+                                                                            </span>
+                                                                            <div class="dependency-message">
+                                                                                <p>
+                                                                                    <strong data-bind="text:name"></strong>
+                                                                                    <span data-bind="text:ready()?'Confirmed!':'Could not be verified...'"></span>
+                                                                                    <button class="btn btn-danger btn-dependency" data-bind="visible:!ready()">Suggested fixes</button>
+                                                                                </p>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
 
     												<div class="install-buttons">
-    													<button id="dependencies" class="btn btn-primary btn-labeled btn-lg fa fa-binoculars">Start Dependency Check</button>
-    													<button id="dependency-next" class="btn btn-mint disabled btn-labeled btn-lg fa fa-arrow-right" style="">Next</button>
+    													<button id="dependencies" class="btn btn-primary btn-labeled btn-lg fa fa-binoculars" data-bind="click: function () { checkDependencies(); }">Start Dependency Check</button>
+    													<button id="dependency-next" class="btn btn-mint btn-labeled btn-lg fa fa-arrow-right" data-bind="enable: getActiveTab().allowNext(), css: { 'disabled': !getActiveTab().allowNext() }, click: function () { nextTab(); }">Next</button>
     												</div>
+
+                                                    <div data-bind="style: { 'fontSize': dependencyCheckRunning() ? '65px' : 0 }" style="text-align: center; transition: all .25s;"><i class="fa fa-spinner fa-3 fa-spin"></i></div>
     											</div>
     										</div>
 
     										<!-- Db Checks -->
     										<div id="db-tab" class="tab-pane fade active in" data-bind="visible: (getActiveTab().title==='Database')">
     											<div class="panel-body" style="padding: 20px 10px 20px 5px;">
-    												<p id="install-instructions" class="install-instructions">Arches requires <a class="text-primary" href="http://www.postgresql.org/download/" target="_blank">PostgreSQL 9.4</a> and <a class="text-primary" href="http://postgis.net/install/" target="_blank">PostGIS 2.0</a>.  Please install the database and provide your connection parameters</p>
+    												<p id="install-instructions" class="install-instructions">Arches requires <a class="text-primary" href="#" data-bind="click: function() { openExternal('http://www.postgresql.org/download/') }" target="_blank">PostgreSQL 9.4</a> and <a class="text-primary" href="#" data-bind="click: function() { openExternal('http://postgis.net/install/') }" target="_blank">PostGIS 2.0</a>.  Please install the database and provide your connection parameters</p>
 
-    												<div id="db-connection-alert" class="panel install-card-alert" style=""></div>
+                                                    <div class="panel install-card-alert">
+                                                        <div class="panel-alert">
+                                                            <div class="alert-wrap in">
+                                                                <div class="alert" role="alert" data-bind="css: { 'alert-mint': postgres.ready(), 'alert-danger': !postgres.ready() }">
+                                                                    <div class="media">
+                                                                        <span class="icon-wrap icon-circle" data-bind="css: { 'icon-bg-success': postgres.ready(), 'icon-bg-fail': !postgres.ready() }">
+                                                                            <i class="fa fa-check" data-bind="css: { 'fa-check': postgres.ready(), 'fa-times': !postgres.ready() }">
+                                                                            </i>
+                                                                        </span>
+                                                                        <div class="dependency-message">
+                                                                            <p>
+                                                                                <strong data-bind="text:name"></strong>
+                                                                                <span data-bind="text:postgres.ready()?'Success!':'Could not connect...'"></span>
+                                                                                <button class="btn btn-danger btn-dependency" data-bind="visible:!postgres.ready()">Suggested fixes</button>
+                                                                            </p>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
 
     												<form class="form-horizontal">
     													<div class="panel-body">
     														<div class="form-group">
     															<label class="col-sm-3 control-label text-semibold" for="">User</label>
     															<div class="col-sm-9 col-md-6 col-lg-4">
-    																<input type="" placeholder="Database Admin" id="" class="form-control">
+    																<input type="" placeholder="user" id="" class="form-control" data-bind="value: postgres.user, valueUpdate: 'keyup'">
     															</div>
     														</div>
     														<div class="form-group">
     															<label class="col-sm-3 control-label text-semibold" for="">Password</label>
     															<div class="col-sm-9 col-md-6 col-lg-4">
-    																<input type="password" placeholder="password" id="" class="form-control">
+    																<input type="password" placeholder="password" id="" class="form-control" data-bind="value: postgres.password, valueUpdate: 'keyup'">
     															</div>
     														</div>
+                                                            <div class="form-group">
+                                                                <label class="col-sm-3 control-label text-semibold" for="">Host</label>
+                                                                <div class="col-sm-9 col-md-6 col-lg-4">
+                                                                    <input type="" placeholder="host" id="" class="form-control" data-bind="value: postgres.host, valueUpdate: 'keyup'">
+                                                                </div>
+                                                            </div>
     														<div class="form-group">
     															<label class="col-sm-3 control-label text-semibold" for="">Port</label>
     															<div class="col-sm-9 col-md-6 col-lg-4">
-    																<input type="" placeholder="5432" id="" class="form-control">
+    																<input type="" placeholder="port" id="" class="form-control" data-bind="value: postgres.port, valueUpdate: 'keyup'">
     															</div>
     														</div>
     														<div class="form-group">
     															<label class="col-sm-3 control-label text-semibold" for="">PostGIS Template</label>
     															<div class="col-sm-9 col-md-6 col-lg-4">
-    																<input type="" placeholder="template_postgis_20" id="" class="form-control">
+    																<input type="" placeholder="PostGIS template name" id="" class="form-control" data-bind="value: postgres.postgisTemplate, valueUpdate: 'keyup'">
     															</div>
     														</div>
     													</div>
     												</form>
 
     												<div class="install-buttons">
-    													<button id="db-test-connection" class="btn btn-primary btn-labeled btn-lg fa fa-check">Test Connection</button>
-    													<button id="db-next" class="btn btn-mint disabled btn-labeled btn-lg fa fa-arrow-right" style="">Next</button>
+    													<button id="db-next" class="btn btn-mint disabled btn-labeled btn-lg fa fa-arrow-right" style="" data-bind="enable: getActiveTab().allowNext(), css: { 'disabled': !getActiveTab().allowNext() }, click: function () { nextTab(); }">Next</button>
     												</div>
     											</div>
     										</div>
@@ -135,31 +173,30 @@
 
     														<div class="input-group">
     															<span class="input-group-btn" style="z-index: 500;">
-    																<span class="btn btn-default btn-file">
-    																	Browse... <input type="file">
+    																<span class="btn btn-default btn-file" data-bind="click: function () { getEnvPath(); }">
+    																	Browse...
     																</span>
     															</span>
-    															<input type="" placeholder="Installation folder for Arches..." class="form-control" style="margin-left: -78px; height: 40px; padding-left: 85px; border-radius: 2px;">
+    															<input readonly data-bind="value: envPath" type="" placeholder="Installation folder for Arches..." class="form-control" style="margin-left: -78px; height: 40px; padding-left: 85px; border-radius: 2px;">
     														</div>
 
     													</div>
     												</form>
 
     												<div class="install-buttons">
-    													<button id="framework-install" class="btn btn-primary btn-labeled btn-lg fa fa-check">Install Arches Framework</button>
-    													<button id="framework-next" class="btn btn-mint disabled btn-labeled btn-lg fa fa-arrow-right" style="">Next</button>
+    													<button id="framework-install" class="btn btn-primary btn-labeled btn-lg fa fa-check" data-bind="click: function() { installArches.start() }, enable: !installArches.running() && (envPath()!==''), css: { 'disabled': installArches.running() && (envPath()!=='') }">Install Arches Framework</button>
+    													<button id="framework-next" class="btn btn-mint disabled btn-labeled btn-lg fa fa-arrow-right" data-bind="enable: getActiveTab().allowNext(), css: { 'disabled': !getActiveTab().allowNext() }, click: function () { nextTab(); }">Next</button>
     												</div>
 
-    												<div id="framework-install-window" class="panel install-progress-window hidden" style="">
+    												<div id="framework-install-window" class="panel install-progress-window" data-bind="visible: installArches.running() || installArches.complete()">
     													<div id="" class="panel-body" style="padding: 10px 10px 20px 10px;">
-    														<dl>
+    														<dl style="margin-bottom: 0px;">
     															<dt>Installing Arches Framework</dt>
-    															<dd><i class="fa fa-check"></i> Installing django</dd>
-    															<dd><i class="fa fa-check"></i> Installing ElasticSearch</dd>
-    															<dd><i class="fa fa-check"></i> Another installation step completed</dd>
-    															<dd><i class="fa fa-times"></i> And another step completed, this time unsuccessfully</dd>
+                                                                <div data-bind="foreach:installArches.commands">
+                                                                    <dd data-bind="visible: running() || complete()"><i class="fa" style="width:12px;" data-bind="css: { 'fa-spinner fa-spin': running(), 'fa-check': complete() && success(), 'fa-times': complete() && !success() }"></i> <span data-bind="text:description"></span></dd>
+                                                                </div>
     															<hr class="no-border" style="">
-    															<dt>Installation completed with no errors</dt>
+    															<dt data-bind="visible: installArches.complete(), text: installArches.success() ? 'Installation completed with no errors' : 'Installation failed (see above)'"></dt>
     														</dl>
     													</div>
     												</div>
@@ -167,7 +204,7 @@
     										</div>
 
     										<!-- Arches App Selection -->
-    										<div id="select-tab" class="tab-pane fade">
+    										<div id="select-tab" class="tab-pane fade active in"  data-bind="visible: (getActiveTab().title==='Select Application')">
     											<p id="install-instructions" class="install-instructions" style="margin-top: 0px; padding-left: 5px;">Select an application to install:</p>
 
     											<div id="select-arches-app-alert" class="panel install-card-alert" style=""></div>
@@ -222,7 +259,7 @@
     										</div>
 
     										<!-- Arches App Installation -->
-    										<div id="install-tab" class="tab-pane fade">
+    										<div id="install-tab" class="tab-pane fade active in" data-bind="visible: (getActiveTab().title==='Install Application')">
     											<h4 class="text-thin hidden">Install Arches-HIP</h4>
 
     											<div id="install-arches-app-alert" class="panel install-card-alert" style=""></div>
@@ -263,7 +300,7 @@
     												</div>
     											</div>
 
-    											<div id="app-install-window" class="panel install-progress-window hidden" style="">
+    											<div id="app-install-window" class="panel install-progress-window">
     												<div id="" class="panel-body" style="padding: 10px 10px 20px 10px;">
     													<dl>
     														<dt>Installing Arches-HIP</dt>
@@ -282,7 +319,7 @@
     										</div>
 
     										<!-- Web Config -->
-    										<div id="web-tab" class="tab-pane fade">
+    										<div id="web-tab" class="tab-pane fade active in" data-bind="visible: (getActiveTab().title==='Web Server')">
     											<h4 class="text-thin" style="padding-left: 5px; margin-bottom: 5px;">Configure your web server</h4>
 
     											<div id="web-arches-app-alert" class="panel install-card-alert" style=""></div>
@@ -299,7 +336,7 @@
 
     													<input id="web-preview" class="" style="" type="checkbox">
     														<a id="" href="localhost:8000/index.html" class="" target="_blank">
-    															Preview Arches <small>(NOT recommended for production use)
+    															Preview Arches <small>(NOT recommended for production use)</small>
     														</a>
     													</input>
     												</div>
@@ -315,7 +352,7 @@
     							<div class="panel-footer dependency-footer">
     								<div class="">
     									<p id="footer-message" class="install-footer-message" data-bind="text: getActiveTab().description"></p>
-    									<a id="help-message" target="_blank" class="install-help" data-bind="attr: { href: getActiveTab().helpLink }">
+    									<a id="help-message" href="#" class="install-help" data-bind="click: function () { openExternal(getActiveTab().helpLink) }">
     										<i class="fa fa-question-circle fa-fw fa-lg"></i>Help
     									</a>
     								</div>

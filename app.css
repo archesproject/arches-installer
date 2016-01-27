@@ -143,6 +143,9 @@ a.list-group-item:not(.active):hover {
 
 .dependency-footer {
 	height: 60px;
+    position: absolute;
+    width: 100%;
+    bottom: 0;
 }
 
 .btn-dependency {

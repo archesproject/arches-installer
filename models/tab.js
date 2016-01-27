@@ -6,11 +6,10 @@
         initialize: function (options) {
             var self = this;
             this.index = options.index ? options.index : 0;
-            this.title = options.title ? options.title : 'title';
-            this.instructions = options.instructions ? options.instructions : 'instructions';
-            this.description = options.description ? options.description : 'description';
-            this.helpLink = options.helpLink ? options.helpLink : 'helpLink';
-            this.tabLink = options.tabLink ? options.tabLink : 'tabLink';
+            this.title = options.title ? options.title : 'Tab';
+            this.description = options.description ? options.description : 'Tab description...';
+            this.helpLink = options.helpLink ? options.helpLink : 'http://arches3.readthedocs.org/en/latest/getting-started/';
+            this.tabLink = options.tabLink ? options.tabLink : '#';
             this.readyModel = options.readyModel ? options.readyModel : null;
             this.active = ko.observable(options.active ? options.active : false);
 
