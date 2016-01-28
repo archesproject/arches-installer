@@ -171,13 +171,13 @@
     												<form class="form-horizontal">
     													<div class="panel-body">
 
-    														<div class="input-group">
+    														<div class="input-group" data-bind="click: function () { getEnvPath(); }">
     															<span class="input-group-btn" style="z-index: 500;">
-    																<span class="btn btn-default btn-file" data-bind="click: function () { getEnvPath(); }">
+    																<span class="btn btn-default btn-file">
     																	Browse...
     																</span>
     															</span>
-    															<input readonly data-bind="value: envPath" type="" placeholder="Installation folder for Arches..." class="form-control" style="margin-left: -78px; height: 40px; padding-left: 85px; border-radius: 2px;">
+    															<input readonly data-bind="value: envPath" type="" placeholder="Installation folder for Arches..." class="form-control" style="margin-left: -78px; height: 40px; padding-left: 85px; border-radius: 2px; background-color: rgb(255, 255, 255); cursor: pointer;">
     														</div>
 
     													</div>
@@ -209,52 +209,31 @@
 
     											<div id="select-arches-app-alert" class="panel install-card-alert" style=""></div>
 
-    											<div class="row" style="">
-    												<div class="col-sm-6">
-    													<div class="panel" style="border: 1px solid #ddd;">
-    														<div class="panel-bg-cover">
-    															<img class="img-responsive" src="img/thumbs/img3.jpg" alt="Image">
-    														</div>
-    														<div class="" style="padding: 10px 0 0 15px;">
-    															<div class="row">
-    																<div class="col-xs-12">
-    																	<h3 class="panel-media-heading">Blank Arches</h3>
-    																	<a href="#" class="btn-link">A "blank slate" to define a custom cultural heritage inventory</a>
-    																</div>
-    																<div class="col-xs-12 mar-top">
-    																	<button id="select-blank" class="btn btn-primary btn-labeled btn-lg fa fa-check">Select Blank Arches</button>
-    																</div>
-    															</div>
-    														</div>
-    														<div class="panel-body" style="height: 150px; overflow-y: hidden;">
-    															<h4>Blank Arches</h4>
-    															Choosing the Blank Application allows you to design your own Arches resources for managing your cultural heritage.  Or you can import existing resource definitions and modify them for your needs.
-    														</div>
-    													</div>
-    												</div>
+    											<div class="row" data-bind="foreach: applicationList">
 
     												<div class="col-sm-6">
     													<div class="panel" style="border: 1px solid #ddd;">
     														<div class="panel-bg-cover">
-    															<img class="img-responsive" src="img/arches/install/arches-hip.png" alt="Image">
+    															<img class="img-responsive" alt="Image" data-bind="attr: {src: image}">
     														</div>
     														<div class="" style="padding: 10px 0 0 15px;">
     															<div class="row">
     																<div class="col-xs-12">
-    																	<h3 class="panel-media-heading">Arches-HIP</h3>
-    																	<a href="#" class="btn-link">An application for managing immovable cultural heritage</a>
+    																	<h3 class="panel-media-heading" data-bind="text: name"></h3>
+    																	<a href="#" class="btn-link" data-bind="text: caption"></a>
     																</div>
     																<div class="col-xs-12 mar-top">
-    																	<button id="select-hip" class="btn btn-primary btn-labeled btn-lg fa fa-check">Select Arches-HIP</button>
+    																	<button id="select-blank" class="btn btn-primary btn-labeled btn-lg fa fa-check" data-bind="text: 'Select '+name, click: function () { $root.selectedApplication($data); }"></button>
     																</div>
     															</div>
     														</div>
     														<div class="panel-body" style="height: 150px; overflow-y: hidden;">
-    															<h4>About Arches-HIP</h4>
-    															This application models cultural heritage resources as: Historic Resources, Historic Resource Groups, Activities, Events, Actors (People or Groups), and Information Objects.
+    															<h4 data-bind="text: name"></h4>
+                                                                <span data-bind="text: description"></span>
     														</div>
     													</div>
     												</div>
+
     											</div>
     										</div>
 

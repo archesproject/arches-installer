@@ -260,3 +260,8 @@ a.list-group-item:not(.active):hover {
     position: absolute;
     transition: all 350ms;
 }
+
+.switchery > small {
+    height: 28px;
+    width: 28px;
+}

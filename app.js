@@ -5,6 +5,7 @@ var ko = require('knockout');
 var shell = require('shell');
 var path = require('path');
 var dialog = require('electron').remote.dialog;
+var Switchery = require('switchery');
 require('pace');
 require('bootstrap');
 require('fastclick');
@@ -17,6 +18,7 @@ var postgres = require('./models/postgres');
 var command = require('./models/command');
 var CommandRunner = require('./models/command-runner');
 var tab = require('./models/tab');
+var application = require('./models/application');
 
 var vm = {};
 vm.showSplash = ko.observable(true);
@@ -99,7 +101,6 @@ vm.getEnvPath = function () {
     }
 };
 
-
 vm.installArches = new CommandRunner([
     new command({
         description: 'Installing pip',
@@ -130,6 +131,23 @@ vm.installArches = new CommandRunner([
         }
     })
 ]);
+
+vm.applicationList = [
+    new application({
+        name: 'Blank Arches',
+        caption: 'A "blank slate" to define a custom cultural heritage inventory',
+        description: 'Choosing the Blank Application allows you to design your own Arches resources for managing your cultural heritage.  Or you can import existing resource definitions and modify them for your needs.',
+        image: 'assets/img/img3.jpg'
+    }),
+    new application({
+        name: 'Arches-HIP',
+        caption: 'An application for managing immovable cultural heritage',
+        description: 'This application models cultural heritage resources as: Historic Resources, Historic Resource Groups, Activities, Events, Actors (People or Groups), and Information Objects.',
+        image: 'assets/img/arches-hip.png'
+    })
+];
+
+vm.selectedApplication = ko.observable(null);
 
 vm.tabs = [];
 var tabDefaults = function () {
@@ -189,16 +207,23 @@ vm.tabs.push(
     new tab(_.extend({
         title: 'Select Application',
         description: 'Select an Arches application',
-        tabLink: '#select-tab'
+        tabLink: '#select-tab',
+        readyModel: {
+            ready: vm.selectedApplication
+        }
     }, tabDefaults()))
 );
-vm.tabs.push(
-    new tab(_.extend({
-        title: 'Install Application',
-        description: 'Install Arches application',
-        tabLink: '#install-tab'
-    }, tabDefaults()))
-);
+var installTab = new tab(_.extend({
+    title: 'Install Application',
+    description: 'Install Arches application',
+    tabLink: '#install-tab'
+}, tabDefaults()));
+vm.tabs.push(installTab);
+vm.selectedApplication.subscribe(function(newValue) {
+    if (newValue) {
+        installTab.activateTab();
+    }
+});
 vm.tabs.push(
     new tab(_.extend({
         title: 'Web Server',
@@ -223,5 +248,9 @@ vm.nextTab = function () {
         vm.tabs[active.index+1].activateTab();
     }
 };
+
+$('input[type=checkbox]').each(function(i, checkbox) {
+    new Switchery(checkbox, { size: 'small' });
+});
 
 ko.applyBindings(vm);
