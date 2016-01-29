@@ -27,6 +27,12 @@
             this.command = options.command ? options.command : '';
             this.description = options.description ? options.description : '';
             this.sudo = options.sudo ? options.sudo : false;
+            this.postExec = options.postExec ? options.postExec : function (error, stdout, stderr, callback) {
+                self.running(false);
+                self.complete(true);
+                self.success(!error);
+                callback(self);
+            };
 
             this.getCommand = options.getCommand ? options.getCommand : function () {
                 return self.command;
@@ -37,13 +43,10 @@
             var p = this.sudo ? sudo : cp;
             this.running(true);
             this.process = p.exec(this.getCommand(), {maxBuffer: 1024 * 500}, function(error, stdout, stderr) {
-                self.running(false);
-                self.complete(true);
-                self.success(!error);
                 self.error(error);
                 self.stdout(stdout);
                 self.stderr(stderr);
-                callback(self);
+                self.postExec(error, stdout, stderr, callback);
             });
             return this.process;
         }

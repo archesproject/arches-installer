@@ -171,7 +171,7 @@
     												<form class="form-horizontal">
     													<div class="panel-body">
 
-    														<div class="input-group" data-bind="click: function () { getEnvPath(); }">
+    														<div class="input-group" data-bind="click: function () { envPath.showDialog(); }">
     															<span class="input-group-btn" style="z-index: 500;">
     																<span class="btn btn-default btn-file">
     																	Browse...
@@ -244,56 +244,64 @@
     											<div id="install-arches-app-alert" class="panel install-card-alert" style=""></div>
 
     											<div class="" style="padding-left: 5px;">
-    												<div class="input-group" style="">
-    													<span class="input-group-btn" style="z-index: 500;">
-    														<span class="btn btn-default btn-file">
-    															Browse... <input type="file">
-    														</span>
-    													</span>
-    													<input type="" placeholder="Installation folder for Arches-HIP..." class="form-control" style="margin-left: -78px; height: 40px; padding-left: 85px;">
-    												</div>
-    												<div class="pad-top install-switch" style="">
-    													<input id="load-thesauri" class="" type="checkbox" checked> Import default thesauri </input>
-    												</div>
-    												<div class="install-switch" style="padding-top: 5px;">
-    													<input id="load-data" class="" type="checkbox"> Import test dataset</input>
-    												</div>
-    												<div class="pad-top install-switch" style="padding-top: 5px;">
-    													<input id="load-search" class="" type="checkbox" checked> Use default search engine </input>
-    													<div id="elasticsearch-config" class="" style="display: none;">
-    														<p class="install-instructions" style="margin-top: 10px;">
-    															Arches installs Elasticsearch to support fast search and data retrieval.  If you want to use your own Elasticsearch cluster, enter the information below
-    														</p>
-    														<div class="">
-    															<input type="text" placeholder="ElasticSearch URL" class="form-control" id="es-url">
-    														</div>
-    														<div class="" style="padding: 5px 0 10px 0;">
-    															<input type="text" placeholder="ElasticSearch port" class="form-control" id="es-port">
-    														</div>
-
-    													</div>
-    												</div>
+                                                    <form class="form-horizontal">
+                                                        <div class="panel-body">
+                                                            <div class="form-group">
+                                                                <label class="col-sm-3 control-label text-semibold" for="">Application Name</label>
+                                                                <div class="col-sm-9 col-md-8 col-lg-4">
+                                                                    <input type="" placeholder="name your Arches application" id="" class="form-control app-name-input" data-bind="value: newAppName, valueUpdate: 'keyup'">
+                                                                </div>
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <label class="col-sm-3 control-label text-semibold" for="">Install Location</label>
+                                                                <div class="col-sm-9 col-md-8 col-lg-4">
+                                                                    <div class="input-group" data-bind="click: function () { appPath.showDialog(); }">
+                                                                        <span class="input-group-btn" style="z-index: 500; left: 5px;">
+                                                                            <span class="btn btn-default btn-file">
+                                                                                Browse...
+                                                                            </span>
+                                                                        </span>
+                                                                        <input readonly data-bind="value: appPath, attr: {'placeholder': 'Installation folder for ' + (selectedApplication() ? selectedApplication().name: '') + '...'}" type="" class="form-control" style="height: 40px; padding-left: 85px; border-radius: 2px; background-color: rgb(255, 255, 255); cursor: pointer; right: 0; top: -5px; position: absolute;">
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <label class="col-sm-3 control-label text-semibold" for="">Import default thesauri</label>
+                                                                <div class="col-sm-9 col-md-6 col-lg-4">
+                                                                    <input class="" type="checkbox" checked>  </input>
+                                                                </div>
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <label class="col-sm-3 control-label text-semibold" for="">Import test dataset</label>
+                                                                <div class="col-sm-9 col-md-6 col-lg-4">
+                                                                    <input class="" type="checkbox">  </input>
+                                                                </div>
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <label class="col-sm-3 control-label text-semibold" for="">Use default search engine</label>
+                                                                <div class="col-sm-9 col-md-6 col-lg-4">
+                                                                    <input class="" type="checkbox" checked>  </input>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </form>
     												<div class="install-buttons">
-    													<button id="install-app" class="btn btn-primary btn-labeled btn-lg fa fa-check">Install Arches-HIP</button>
-    													<button id="app-next" class="btn btn-mint disabled btn-labeled btn-lg fa fa-arrow-right" style="">Next</button>
+                                                        <button class="btn btn-primary btn-labeled btn-lg fa fa-check" data-bind="click: function() { selectedApplication().installer.start() }, enable: !selectedApplication().installer.running() && (appPath()!=='') && (newAppName()!==''), css: { 'disabled': selectedApplication().installer.running() || (appPath()==='') || (newAppName()==='')}">Install <span data-bind="text:selectedApplication().name"></span></button>
+    													<button class="btn btn-mint disabled btn-labeled btn-lg fa fa-arrow-right" data-bind="enable: getActiveTab().allowNext(), css: { 'disabled': !getActiveTab().allowNext() }, click: function () { nextTab(); }">Next</button>
     												</div>
     											</div>
 
-    											<div id="app-install-window" class="panel install-progress-window">
-    												<div id="" class="panel-body" style="padding: 10px 10px 20px 10px;">
-    													<dl>
-    														<dt>Installing Arches-HIP</dt>
-    														<dd><i class="fa fa-check"></i> Installing Heritage Resource</dd>
-    														<dd><i class="fa fa-check"></i> Installing Heritage Resource Group</dd>
-    														<dd><i class="fa fa-check"></i> Installing Activities</dd>
-    														<dd><i class="fa fa-check"></i> Installing Events</dd>
-    														<dd><i class="fa fa-check"></i> Installing Actors</dd>
-    														<dd><i class="fa fa-check"></i> Installing Information Objects</dd>
-    														<dd><i class="fa fa-check"></i> Installing xxx Thesaurus</dd>
-    														<hr class="no-border" style="">
-    														<dt>Installation completed with no errors</dt>
-    													</dl>
-    												</div>
+    											<div id="app-install-window" class="panel install-progress-window"  data-bind="visible: selectedApplication().installer.running() || selectedApplication().installer.complete()">
+                                                    <div id="" class="panel-body" style="padding: 10px 10px 20px 10px;">
+                                                        <dl style="margin-bottom: 0px;">
+                                                            <dt>Installing <span data-bind="text:selectedApplication().name"></span></dt>
+                                                            <div data-bind="foreach:selectedApplication().installer.commands">
+                                                                <dd data-bind="visible: running() || complete()"><i class="fa" style="width:12px;" data-bind="css: { 'fa-spinner fa-spin': running(), 'fa-check': complete() && success(), 'fa-times': complete() && !success() }"></i> <span data-bind="text:description"></span></dd>
+                                                            </div>
+                                                            <hr class="no-border" style="">
+                                                            <dt data-bind="visible: selectedApplication().installer.complete(), text: selectedApplication().installer.success() ? 'Installation completed with no errors' : 'Installation failed (see above)'"></dt>
+                                                        </dl>
+                                                    </div>
     											</div>
     										</div>
 
@@ -313,11 +321,12 @@
     												<div class="pad-top install-switch" style="padding-left: 0px; margin-bottom: 20px;">
     													<p id="install-instructions" class="install-instructions" style="margin-top: 0px; padding-left: 0px;">To confirm your installation (or for very small projects), you can use Arches own web server</p>
 
-    													<input id="web-preview" class="" style="" type="checkbox">
-    														<a id="" href="localhost:8000/index.html" class="" target="_blank">
+    													<input id="web-preview" class="" style="" type="checkbox" data-bind="checked: devServerRunning">
+    														<a id="" href="#" class="" data-bind="click: function () { devServerRunning(!devServerRunning()) }">
     															Preview Arches <small>(NOT recommended for production use)</small>
     														</a>
     													</input>
+                                                        <div data-bind="visible: devServerRunning">server running...</div>
     												</div>
     												<div class="install-buttons">
     													<button id="install-finish" class="btn btn-primary btn-labeled btn-lg fa fa-check" style="">Finish</button>

@@ -8,6 +8,7 @@
             this.caption = options.caption ? options.caption : '';
             this.description = options.description ? options.description : '';
             this.image = options.image ? options.image : '';
+            this.installer = options.installer ? options.installer : null;
         }
     });
 })();

@@ -6,6 +6,7 @@ var shell = require('shell');
 var path = require('path');
 var dialog = require('electron').remote.dialog;
 var Switchery = require('switchery');
+var cp = require('child_process');
 require('pace');
 require('bootstrap');
 require('fastclick');
@@ -89,16 +90,33 @@ vm.checkDependencies = function () {
 };
 vm.checkDependencies()
 
-var envPathStr = localStorage.getItem('envPath');
-vm.envPath = ko.observable(envPathStr ? envPathStr : '');
-vm.envPath.subscribe(function(newValue) {
-    localStorage.setItem('envPath', newValue);
-});
-vm.getEnvPath = function () {
-    var dir = dialog.showOpenDialog({ properties: [ 'openDirectory', 'createDirectory' ]});
-    if (dir) {
-        vm.envPath(dir[0]);
+var pathViewModelFactory = function(key) {
+    var pathStr = localStorage.getItem(key);
+    var viewModel = ko.observable(pathStr ? pathStr : '');
+    viewModel.subscribe(function(newValue) {
+        localStorage.setItem(key, newValue);
+    });
+    viewModel.showDialog = function () {
+        var dir = dialog.showOpenDialog({ properties: [ 'openDirectory', 'createDirectory' ]});
+        if (dir) {
+            viewModel(dir[0]);
+        }
+    };
+    return viewModel;
+};
+
+vm.envPath = pathViewModelFactory('envPath');
+vm.appPath = pathViewModelFactory('appPath');
+vm.newAppName = ko.observable('');
+
+var getEnvCommand = function (command) {
+    var folder = 'bin';
+    var prefix = 'source ';
+    if (process.platform === 'win32') {
+        folder = 'Scripts';
+        prefix = '';
     }
+    return prefix + '"' + path.join(vm.envPath(), folder, command) + '"';
 };
 
 vm.installArches = new CommandRunner([
@@ -121,13 +139,65 @@ vm.installArches = new CommandRunner([
     new command({
         description: 'Installing arches',
         getCommand: function () {
-            var folder = 'bin';
-            var prefix = 'source ';
-            if (process.platform === 'win32') {
-                folder = 'Scripts';
-                prefix = '';
-            }
-            return prefix + '"' + path.join(vm.envPath(), folder, 'activate') + '"' + ' && pip install arches';
+            return getEnvCommand('activate') + ' && pip install arches';
+        }
+    })
+]);
+
+var esProc;
+var startElasticSearch = function () {
+    var esStartCommand = path.join(vm.appPath(), vm.newAppName(), vm.newAppName(), 'elasticsearch/elasticsearch-1.4.1/bin/elasticsearch');
+    var proc = cp.spawn(esStartCommand, [], {
+        detatched: true
+    });
+    proc.on('error', function (err) {
+      console.log(err);
+    });
+    return proc;
+};
+var installHip = new CommandRunner([
+    new command({
+        description: 'Installing arches-hip',
+        getCommand: function () {
+            return getEnvCommand('activate') + ' && pip install arches_hip';
+        }
+    }),
+    new command({
+        description: 'Creating application',
+        getCommand: function () {
+            return getEnvCommand('activate') + ' && cd "' + vm.appPath() + '" ' +
+                '&& arches-app create ' + vm.newAppName() + ' --app arches_hip';
+        }
+    }),
+    new command({
+        description: 'Setting up elasticsearch',
+        getCommand: function () {
+            return getEnvCommand('activate') + ' && cd "' + path.join(vm.appPath(), vm.newAppName()) + '" ' +
+                '&& python manage.py packages -o setup_elasticsearch';
+        },
+        postExec: function (error, stdout, stderr, callback) {
+            var cmd = this;
+            esProc = startElasticSearch();
+            setTimeout(function() {
+                cmd.running(false);
+                cmd.complete(true);
+                cmd.success(!error);
+                callback(cmd);
+            }, 5000);
+        }
+    }),
+    new command({
+        description: 'Creating database',
+        getCommand: function () {
+            return getEnvCommand('activate') + ' && cd "' + path.join(vm.appPath(), vm.newAppName()) + '" ' +
+                '&& python manage.py packages -o install';
+        },
+        postExec: function (error, stdout, stderr, callback) {
+            esProc.kill();
+            this.running(false);
+            this.complete(true);
+            this.success(!error);
+            callback(this);
         }
     })
 ]);
@@ -137,17 +207,45 @@ vm.applicationList = [
         name: 'Blank Arches',
         caption: 'A "blank slate" to define a custom cultural heritage inventory',
         description: 'Choosing the Blank Application allows you to design your own Arches resources for managing your cultural heritage.  Or you can import existing resource definitions and modify them for your needs.',
-        image: 'assets/img/img3.jpg'
+        image: 'assets/img/img3.jpg',
+        installer: installHip
     }),
     new application({
         name: 'Arches-HIP',
         caption: 'An application for managing immovable cultural heritage',
         description: 'This application models cultural heritage resources as: Historic Resources, Historic Resource Groups, Activities, Events, Actors (People or Groups), and Information Objects.',
-        image: 'assets/img/arches-hip.png'
+        image: 'assets/img/arches-hip.png',
+        installer: installHip
     })
 ];
 
-vm.selectedApplication = ko.observable(null);
+vm.selectedApplication = ko.observable(vm.applicationList[1]);
+
+vm.devServerRunning = ko.observable(false);
+var devServer;
+vm.devServerRunning.subscribe(function (running) {
+    if (running) {
+        var djangoCmd = getEnvCommand('python') + ' ' + path.join(vm.appPath(), vm.newAppName(), 'manage.py') + ' runserver';
+        devServer = [
+            startElasticSearch(),
+            cp.exec(djangoCmd, function() {
+                console.log(arguments);
+            })
+        ];
+    } else if (devServer) {
+        for (var i = 0; i < devServer.length; i++) {
+            devServer[i].kill();
+        }
+        devServer = null;
+    }
+});
+process.on('exit', function () {
+    if (devServer) {
+        for (var i = 0; i < devServer.length; i++) {
+            devServer[i].kill();
+        }
+    }
+})
 
 vm.tabs = [];
 var tabDefaults = function () {
@@ -209,7 +307,9 @@ vm.tabs.push(
         description: 'Select an Arches application',
         tabLink: '#select-tab',
         readyModel: {
-            ready: vm.selectedApplication
+            ready: ko.computed(function() {
+                return vm.selectedApplication().installer.success()
+            })
         }
     }, tabDefaults()))
 );
@@ -251,6 +351,17 @@ vm.nextTab = function () {
 
 $('input[type=checkbox]').each(function(i, checkbox) {
     new Switchery(checkbox, { size: 'small' });
+    checkbox.onchange = function() {
+      console.log('a');
+    };
+});
+$('.app-name-input').bind('keypress', function(e) {
+    if (e.which < 48 ||
+        (e.which > 57 && e.which < 65) ||
+        (e.which > 90 && e.which < 97 && e.which !==95) ||
+        e.which > 122) {
+        e.preventDefault();
+    }
 });
 
 ko.applyBindings(vm);
