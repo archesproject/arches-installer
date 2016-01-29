@@ -20,6 +20,7 @@ var command = require('./models/command');
 var CommandRunner = require('./models/command-runner');
 var tab = require('./models/tab');
 var application = require('./models/application');
+var versionCompare = require('./plugins/utils').versionCompare;
 
 var vm = {};
 vm.showSplash = ko.observable(true);
@@ -30,27 +31,41 @@ vm.postgres.testConnection();
 
 vm.openExternal = shell.openExternal;
 vm.currentStep = ko.observable(0);
+
 vm.geos = new dependency({
     name: 'GEOS',
     versionCmd: process.platform==='win32' ? 'IF EXIST C:/OSGeo4W64/bin/geos_c.dll ECHO True' : 'geos-config --version',
+    helpURL: 'https://trac.osgeo.org/geos/',
     parseVersion: function (stdout) {
-      if (String(stdout).trim()==="True") {
-        return true;
-      }
-      else{
-        return stdout.split('.')[0]==='3'
-      }
+        if (process.platform==='win32') {
+            return String(stdout).trim() === "True";
+        }
+        else {
+            this.version(stdout);
+            return stdout.split('.')[0]==='3'
+        }
     }
 });
 
 vm.python = new dependency({
-    name: 'Python 2.7.6',
+    name: 'Python',
     versionCmd: 'python --version',
+    helpURL: 'https://www.python.org/downloads/',
     // python incorrectly sends version string to stderr...
     parseVersion: function (stdout, stderr) {
         if (stderr && stderr.split('Python ')[1]) {
-            var versionInfo = stderr.split('Python ')[1].split('.');
-            return (versionInfo[0]==='2' && versionInfo[1]==='7');
+            var versionInfo = stderr.split('Python ')[1];
+            this.version(versionInfo);
+            if (versionCompare(versionInfo, '2.7.6') < 0){
+                this.statusText(' - Arches requires at least python version 2.7.6')
+                return false;
+            }
+            if (versionCompare(versionInfo, '2.7.7') === 0 || 
+                versionCompare(versionInfo, '2.7.8') === 0){
+                this.statusText(' - Version 2.7.7 and 2.7.8 might not work as expected')
+                return false;
+            }
+            return (versionCompare(versionInfo, '2.7.6') >= 0);
         }
         return false;
     }
@@ -59,10 +74,21 @@ vm.python = new dependency({
 vm.java = new dependency({
     name: 'Java (JDK)',
     versionCmd: 'java -version',
+    helpURL: 'http://www.oracle.com/technetwork/java/javase/downloads/index.html',
     parseVersion: function (stdout, stderr) {
       if (stderr && stderr.split('java version')[1]) {
-        var versionInfo = stderr.split('"')[1].split('.');
-        return (versionInfo[0]==='1' && versionInfo[1]==='7');
+        var versionInfo = stderr.split('"')[1];
+        this.version(versionInfo);
+        if (versionCompare(versionInfo, '1.7.0_55') < 0){
+            this.statusText(' - Elasticsearch requires at least JDK version 1.7.0_55')
+            return false;
+        }
+        if (versionCompare(versionInfo, '1.8') > 0 &&
+            versionCompare(versionInfo, '1.8.0_20') < 0 ){
+            this.statusText(' - Elasticsearch requires at least JDK version 1.8.0_20')
+            return false;
+        }
+        return (versionCompare(versionInfo, '1.7.0_55') >= 0);
       }
       return false;
     }
