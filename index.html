@@ -73,8 +73,10 @@
                                                                             <div class="dependency-message">
                                                                                 <p>
                                                                                     <strong data-bind="text:name"></strong>
-                                                                                    <span data-bind="text:ready()?'Confirmed!':'Could not be verified...'"></span>
-                                                                                    <button class="btn btn-danger btn-dependency" data-bind="visible:!ready()">Suggested fixes</button>
+                                                                                    <span data-bind="text: version"></span>
+                                                                                    <span data-bind="text: statusText"></span>
+                                                                                    <span data-bind="visible:!ready();"><button class="btn btn-danger btn-dependency" data-bind="click: function() { $parent.openExternal(helpURL()) }">Suggested fixes</button></span>
+                                                                                    
                                                                                 </p>
                                                                             </div>
                                                                         </div>

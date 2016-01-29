@@ -13,7 +13,10 @@
                 return (stdout+stderr!=='');
             };
             this.versionCmd = options.versionCmd ? options.versionCmd : '';
-            this.name = options.name ? options.name : '';
+            this.name = ko.observable(options.name ? options.name : '');
+            this.version = ko.observable('');
+            this.statusText = ko.observable('');
+            this.helpURL = ko.observable(options.helpURL ? options.helpURL : '');
 
             this.check = function (callback) {
                 self.ready(false);
