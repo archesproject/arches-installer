@@ -7,6 +7,7 @@ var path = require('path');
 var dialog = require('electron').remote.dialog;
 var Switchery = require('switchery');
 var cp = require('child_process');
+var kill = require('tree-kill');
 require('pace');
 require('bootstrap');
 require('fastclick');
@@ -24,13 +25,10 @@ var versionCompare = require('./plugins/utils').versionCompare;
 
 var vm = {};
 vm.showSplash = ko.observable(true);
-vm.showDependencies = ko.observable(false);
-vm.showInstaller = ko.observable(false);
 vm.postgres = new postgres();
 vm.postgres.testConnection();
 
 vm.openExternal = shell.openExternal;
-vm.currentStep = ko.observable(0);
 
 vm.geos = new dependency({
     name: 'GEOS',
@@ -60,7 +58,7 @@ vm.python = new dependency({
                 this.statusText(' - Arches requires at least python version 2.7.6')
                 return false;
             }
-            if (versionCompare(versionInfo, '2.7.7') === 0 || 
+            if (versionCompare(versionInfo, '2.7.7') === 0 ||
                 versionCompare(versionInfo, '2.7.8') === 0){
                 this.statusText(' - Version 2.7.7 and 2.7.8 might not work as expected')
                 return false;
@@ -79,8 +77,8 @@ vm.java = new dependency({
       if (stderr && stderr.split('java version')[1]) {
         var versionInfo = stderr.split('"')[1];
         this.version(versionInfo);
-        if (versionCompare(versionInfo, '1.7.0_55') < 0){
-            this.statusText(' - Elasticsearch requires at least JDK version 1.7.0_55')
+        if (versionCompare(versionInfo, '1.7.0_50') < 0){
+            this.statusText(' - Elasticsearch requires at least JDK version 1.7.0_50')
             return false;
         }
         if (versionCompare(versionInfo, '1.8') > 0 &&
@@ -88,7 +86,7 @@ vm.java = new dependency({
             this.statusText(' - Elasticsearch requires at least JDK version 1.8.0_20')
             return false;
         }
-        return (versionCompare(versionInfo, '1.7.0_55') >= 0);
+        return (versionCompare(versionInfo, '1.7.0_50') >= 0);
       }
       return false;
     }
@@ -135,14 +133,14 @@ vm.envPath = pathViewModelFactory('envPath');
 vm.appPath = pathViewModelFactory('appPath');
 vm.newAppName = ko.observable('');
 
-var getEnvCommand = function (command) {
+var getEnvCommand = function (command, sourcePrefix) {
     var folder = 'bin';
-    var prefix = 'source ';
+    var prefix = sourcePrefix?'source ':'';
     if (process.platform === 'win32') {
         folder = 'Scripts';
         prefix = '';
     }
-    return prefix + '"' + path.join(vm.envPath(), folder, command) + '"';
+    return prefix + path.join(vm.envPath(), folder, command);
 };
 
 vm.installArches = new CommandRunner([
@@ -165,7 +163,7 @@ vm.installArches = new CommandRunner([
     new command({
         description: 'Installing arches',
         getCommand: function () {
-            return getEnvCommand('activate') + ' && pip install arches';
+            return getEnvCommand('activate', true) + ' && pip install arches';
         }
     })
 ]);
@@ -173,9 +171,7 @@ vm.installArches = new CommandRunner([
 var esProc;
 var startElasticSearch = function () {
     var esStartCommand = path.join(vm.appPath(), vm.newAppName(), vm.newAppName(), 'elasticsearch/elasticsearch-1.4.1/bin/elasticsearch');
-    var proc = cp.spawn(esStartCommand, [], {
-        detatched: true
-    });
+    var proc = cp.spawn(esStartCommand);
     proc.on('error', function (err) {
       console.log(err);
     });
@@ -185,20 +181,20 @@ var installHip = new CommandRunner([
     new command({
         description: 'Installing arches-hip',
         getCommand: function () {
-            return getEnvCommand('activate') + ' && pip install arches_hip';
+            return getEnvCommand('activate', true) + ' && pip install arches_hip';
         }
     }),
     new command({
         description: 'Creating application',
         getCommand: function () {
-            return getEnvCommand('activate') + ' && cd "' + vm.appPath() + '" ' +
+            return getEnvCommand('activate', true) + ' && cd "' + vm.appPath() + '" ' +
                 '&& arches-app create ' + vm.newAppName() + ' --app arches_hip';
         }
     }),
     new command({
         description: 'Setting up elasticsearch',
         getCommand: function () {
-            return getEnvCommand('activate') + ' && cd "' + path.join(vm.appPath(), vm.newAppName()) + '" ' +
+            return getEnvCommand('activate', true) + ' && cd "' + path.join(vm.appPath(), vm.newAppName()) + '" ' +
                 '&& python manage.py packages -o setup_elasticsearch';
         },
         postExec: function (error, stdout, stderr, callback) {
@@ -215,11 +211,11 @@ var installHip = new CommandRunner([
     new command({
         description: 'Creating database',
         getCommand: function () {
-            return getEnvCommand('activate') + ' && cd "' + path.join(vm.appPath(), vm.newAppName()) + '" ' +
+            return getEnvCommand('activate', true) + ' && cd "' + path.join(vm.appPath(), vm.newAppName()) + '" ' +
                 '&& python manage.py packages -o install';
         },
         postExec: function (error, stdout, stderr, callback) {
-            esProc.kill();
+            kill(esProc.pid);
             this.running(false);
             this.complete(true);
             this.success(!error);
@@ -251,16 +247,15 @@ vm.devServerRunning = ko.observable(false);
 var devServer;
 vm.devServerRunning.subscribe(function (running) {
     if (running) {
-        var djangoCmd = getEnvCommand('python') + ' ' + path.join(vm.appPath(), vm.newAppName(), 'manage.py') + ' runserver';
+        var djangoProc = cp.spawn(getEnvCommand('python'), [path.join(vm.appPath(), vm.newAppName(), 'manage.py'), 'runserver']);
         devServer = [
             startElasticSearch(),
-            cp.exec(djangoCmd, function() {
-                console.log(arguments);
-            })
+            djangoProc
         ];
     } else if (devServer) {
-        for (var i = 0; i < devServer.length; i++) {
-            devServer[i].kill();
+        var killServer = devServer;
+        for (var i = 0; i < killServer.length; i++) {
+            kill(killServer[i].pid);
         }
         devServer = null;
     }
@@ -268,7 +263,7 @@ vm.devServerRunning.subscribe(function (running) {
 process.on('exit', function () {
     if (devServer) {
         for (var i = 0; i < devServer.length; i++) {
-            devServer[i].kill();
+            kill(devServer[i].pid);
         }
     }
 })
@@ -381,6 +376,7 @@ $('input[type=checkbox]').each(function(i, checkbox) {
       console.log('a');
     };
 });
+
 $('.app-name-input').bind('keypress', function(e) {
     if (e.which < 48 ||
         (e.which > 57 && e.which < 65) ||

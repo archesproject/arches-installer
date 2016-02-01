@@ -23,7 +23,7 @@
 							</p>
 						</div>
 						<div class="welcome-wrapper">
-							<button id="install-welcome" class="btn btn-primary btn-labeled btn-lg fa fa-check" data-bind="click: function () { showSplash(false); showDependencies(true); }">Install Arches</button>
+							<button id="install-welcome" class="btn btn-primary btn-labeled btn-lg fa fa-check" data-bind="click: function () { showSplash(false); }">Install Arches</button>
 						</div>
 					</div>
 				</div>
@@ -76,7 +76,7 @@
                                                                                     <span data-bind="text: version"></span>
                                                                                     <span data-bind="text: statusText"></span>
                                                                                     <span data-bind="visible:!ready();"><button class="btn btn-danger btn-dependency" data-bind="click: function() { $parent.openExternal(helpURL()) }">Suggested fixes</button></span>
-                                                                                    
+
                                                                                 </p>
                                                                             </div>
                                                                         </div>
