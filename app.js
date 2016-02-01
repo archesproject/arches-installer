@@ -1,3 +1,4 @@
+var fixPath = require('fix-path')();
 var $ = require('jquery');
 var _ = require('underscore');
 var jQuery = $;
