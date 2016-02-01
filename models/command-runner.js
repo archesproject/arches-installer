@@ -1,8 +1,9 @@
 (function () {
     var ko = require('knockout');
 
-    var CommandRunner = function(commands) {
+    var CommandRunner = function(commands, postExec) {
         var self = this;
+        this.postExec = postExec;
         this.current = ko.observable(0);
         this.running = ko.observable(false);
         this.error = ko.observable(false);
@@ -57,6 +58,9 @@
         end: function (noKill) {
             if (this.process && !noKill) {
                 this.process.kill();
+            }
+            if (this.postExec) {
+                this.postExec();
             }
             this.process = null;
             this.running(false);

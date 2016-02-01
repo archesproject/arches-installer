@@ -10,13 +10,7 @@ var fs = require('fs');
 var mustache = require('mustache');
 var cp = require('child_process');
 var kill = require('tree-kill');
-require('pace');
 require('bootstrap');
-require('fastclick');
-require('switchery');
-require('bootstrap-select');
-require('./plugins/bootstrap-wizard/jquery.bootstrap.wizard.min')
-require('chosen');
 var dependency = require('./models/dependency');
 var postgres = require('./models/postgres');
 var command = require('./models/command');
@@ -136,7 +130,7 @@ vm.envPath = pathViewModelFactory('envPath');
 vm.appPath = pathViewModelFactory('appPath');
 vm.newAppName = ko.observable('');
 
-var settingsTemplate = fs.readFileSync('./templates/settings.py', 'utf8');
+var settingsTemplate = fs.readFileSync(path.join(__dirname, '/templates/settings.py'), 'utf8');
 var updateApplicationSettings = function () {
     if (vm.appPath() !== '') {
         var filePath = path.join(vm.appPath(), vm.newAppName(), vm.newAppName(), 'settings_local.py');
@@ -168,7 +162,7 @@ var getEnvCommand = function (command, sourcePrefix) {
 vm.installArches = new CommandRunner([
     new command({
         description: 'Installing pip',
-        command: 'python ' + path.normalize('assets/scripts/get-pip.py'),
+        command: 'python ' + path.join(__dirname, 'assets/scripts/get-pip.py'),
         sudo: process.platform!=='win32'
     }),
     new command({
@@ -200,7 +194,19 @@ var startElasticSearch = function () {
     return proc;
 };
 
-var applicationInstallerFactory = function (applicationName) {
+vm.importThesauri = ko.observable(true);
+
+var importThesauriFactory = function (applicationName) {
+    var authFilesDir = path.join(vm.envPath(), 'lib/python2.7/site-packages', applicationName, 'source_data/sample_data/concepts/sample_authority_files');
+    return new command({
+        description: 'Importing default Thesauri',
+        getCommand: function () {
+            return getEnvCommand('activate', true) + ' && cd "' + path.join(vm.appPath(), vm.newAppName()) + '" ' +
+            "&& python manage.py packages -o load_concept_scheme -s '" + authFilesDir + "'";
+        }
+    });
+}
+var applicationInstallerFactory = function (applicationName, hasDefaultAuthFiles) {
     var commands = [
         new command({
             description: 'Creating application',
@@ -238,16 +244,12 @@ var applicationInstallerFactory = function (applicationName) {
             getCommand: function () {
                 return getEnvCommand('activate', true) + ' && cd "' + path.join(vm.appPath(), vm.newAppName()) + '" ' +
                 '&& python manage.py packages -o install';
-            },
-            postExec: function (error, stdout, stderr, callback) {
-                kill(esProc.pid);
-                this.running(false);
-                this.complete(true);
-                this.success(!error);
-                callback(this);
             }
         })
     ];
+    if (vm.importThesauri() && hasDefaultAuthFiles) {
+        commands.push(importThesauriFactory(applicationName));
+    }
     if (applicationName !== 'arches') {
         commands.unshift(new command({
             description: 'Installing ' + applicationName,
@@ -257,25 +259,40 @@ var applicationInstallerFactory = function (applicationName) {
         }))
     }
 
-    return new CommandRunner(commands);
+    return new CommandRunner(commands, function () {
+        if (esProc) {
+            kill(esProc.pid);
+        }
+    });
 }
 
 vm.applicationList = [
     new application({
         name: 'Blank Arches',
+        module: 'arches',
+        hasDefaultAuthFiles: false,
         caption: 'A "blank slate" to define a custom cultural heritage inventory',
         description: 'Choosing the Blank Application allows you to design your own Arches resources for managing your cultural heritage.  Or you can import existing resource definitions and modify them for your needs.',
         image: 'assets/img/img3.jpg',
-        installer: applicationInstallerFactory('arches')
+        installer: applicationInstallerFactory('arches', false)
     }),
     new application({
         name: 'Arches-HIP',
+        module: 'arches_hip',
+        hasDefaultAuthFiles: true,
         caption: 'An application for managing immovable cultural heritage',
         description: 'This application models cultural heritage resources as: Historic Resources, Historic Resource Groups, Activities, Events, Actors (People or Groups), and Information Objects.',
         image: 'assets/img/arches-hip.png',
-        installer: applicationInstallerFactory('arches_hip')
+        installer: applicationInstallerFactory('arches_hip', true)
     })
 ];
+
+vm.importThesauri.subscribe(function () {
+    for (var i = 0; i < vm.applicationList.length; i++) {
+        vm.applicationList[i].installer = applicationInstallerFactory(vm.applicationList[i].module, vm.applicationList[i].hasDefaultAuthFiles);
+    }
+    vm.selectedApplication(vm.selectedApplication());
+});
 
 vm.selectedApplication = ko.observable(vm.applicationList[1]);
 
@@ -405,13 +422,6 @@ vm.nextTab = function () {
         vm.tabs[active.index+1].activateTab();
     }
 };
-
-$('input[type=checkbox]').each(function(i, checkbox) {
-    new Switchery(checkbox, { size: 'small' });
-    checkbox.onchange = function() {
-      console.log('a');
-    };
-});
 
 $('.app-name-input').bind('keypress', function(e) {
     if (e.which < 48 ||

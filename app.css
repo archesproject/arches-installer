@@ -80,7 +80,7 @@ a.list-group-item:not(.active):hover {
 }
 
 .install-buttons {
-	margin-top: 10px;
+	margin-top: 30px;
 }
 
 .install-card-alert {
@@ -261,7 +261,22 @@ a.list-group-item:not(.active):hover {
     transition: all 350ms;
 }
 
+.switchery {
+    transition-duration: 0.1s;
+}
+
 .switchery > small {
+    transition-duration: 0.1s;
     height: 28px;
     width: 28px;
+    left: 0px;
+}
+
+.switchery.on {
+    border-color: rgb(100, 189, 99);
+    background-color: rgb(100, 189, 99);
+}
+
+.switchery.on > small {
+    left: 22px;
 }

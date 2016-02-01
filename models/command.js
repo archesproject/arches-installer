@@ -1,12 +1,13 @@
 (function () {
     var Backbone = require('backbone');
     var ko = require('knockout');
+    var path = require('path');
     var sudoExec = require('electron-sudo').exec;
     var sudo = {
         exec: function(cmd, options, callback) {
             sudoExec(cmd, {
                 name: 'Arches Installer',
-                icns: './assets/img/arches_logo.icns',
+                icns: path.join(__dirname,'../assets/img/arches_logo.icns'),
                 options: options
             }, callback);
         }
