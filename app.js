@@ -6,6 +6,8 @@ var shell = require('shell');
 var path = require('path');
 var dialog = require('electron').remote.dialog;
 var Switchery = require('switchery');
+var fs = require('fs');
+var mustache = require('mustache');
 var cp = require('child_process');
 var kill = require('tree-kill');
 require('pace');
@@ -27,6 +29,7 @@ var vm = {};
 vm.showSplash = ko.observable(true);
 vm.postgres = new postgres();
 vm.postgres.testConnection();
+
 
 vm.openExternal = shell.openExternal;
 
@@ -133,6 +136,25 @@ vm.envPath = pathViewModelFactory('envPath');
 vm.appPath = pathViewModelFactory('appPath');
 vm.newAppName = ko.observable('');
 
+var settingsTemplate = fs.readFileSync('./templates/settings.py', 'utf8');
+var updateApplicationSettings = function () {
+    if (vm.appPath() !== '') {
+        var filePath = path.join(vm.appPath(), vm.newAppName(), vm.newAppName(), 'settings_local.py');
+        var content = mustache.render(settingsTemplate, {
+            host: vm.postgres.host(),
+            port: vm.postgres.port(),
+            user: vm.postgres.user(),
+            password: vm.postgres.password(),
+            postgisTemplate: vm.postgres.postgisTemplate()
+        });
+        fs.writeFile(filePath, content, function(err) {
+            if(err) {
+                console.log(err);
+            }
+        });
+    }
+};
+
 var getEnvCommand = function (command, sourcePrefix) {
     var folder = 'bin';
     var prefix = sourcePrefix?'source ':'';
@@ -189,6 +211,13 @@ var installHip = new CommandRunner([
         getCommand: function () {
             return getEnvCommand('activate', true) + ' && cd "' + vm.appPath() + '" ' +
                 '&& arches-app create ' + vm.newAppName() + ' --app arches_hip';
+        },
+        postExec: function (error, stdout, stderr, callback) {
+            updateApplicationSettings();
+            this.running(false);
+            this.complete(true);
+            this.success(!error);
+            callback(this);
         }
     }),
     new command({
