@@ -199,59 +199,66 @@ var startElasticSearch = function () {
     });
     return proc;
 };
-var installHip = new CommandRunner([
-    new command({
-        description: 'Installing arches-hip',
-        getCommand: function () {
-            return getEnvCommand('activate', true) + ' && pip install arches_hip';
-        }
-    }),
-    new command({
-        description: 'Creating application',
-        getCommand: function () {
-            return getEnvCommand('activate', true) + ' && cd "' + vm.appPath() + '" ' +
-                '&& arches-app create ' + vm.newAppName() + ' --app arches_hip';
-        },
-        postExec: function (error, stdout, stderr, callback) {
-            updateApplicationSettings();
-            this.running(false);
-            this.complete(true);
-            this.success(!error);
-            callback(this);
-        }
-    }),
-    new command({
-        description: 'Setting up elasticsearch',
-        getCommand: function () {
-            return getEnvCommand('activate', true) + ' && cd "' + path.join(vm.appPath(), vm.newAppName()) + '" ' +
+
+var applicationInstallerFactory = function (applicationName) {
+    var commands = [
+        new command({
+            description: 'Creating application',
+            getCommand: function () {
+                return getEnvCommand('activate', true) + ' && cd "' + vm.appPath() + '" ' +
+                '&& arches-app create ' + vm.newAppName() + ' --app ' + applicationName;
+            },
+            postExec: function (error, stdout, stderr, callback) {
+                updateApplicationSettings();
+                this.running(false);
+                this.complete(true);
+                this.success(!error);
+                callback(this);
+            }
+        }),
+        new command({
+            description: 'Setting up elasticsearch',
+            getCommand: function () {
+                return getEnvCommand('activate', true) + ' && cd "' + path.join(vm.appPath(), vm.newAppName()) + '" ' +
                 '&& python manage.py packages -o setup_elasticsearch';
-        },
-        postExec: function (error, stdout, stderr, callback) {
-            var cmd = this;
-            esProc = startElasticSearch();
-            setTimeout(function() {
-                cmd.running(false);
-                cmd.complete(true);
-                cmd.success(!error);
-                callback(cmd);
-            }, 5000);
-        }
-    }),
-    new command({
-        description: 'Creating database',
-        getCommand: function () {
-            return getEnvCommand('activate', true) + ' && cd "' + path.join(vm.appPath(), vm.newAppName()) + '" ' +
+            },
+            postExec: function (error, stdout, stderr, callback) {
+                var cmd = this;
+                esProc = startElasticSearch();
+                setTimeout(function() {
+                    cmd.running(false);
+                    cmd.complete(true);
+                    cmd.success(!error);
+                    callback(cmd);
+                }, 5000);
+            }
+        }),
+        new command({
+            description: 'Creating database',
+            getCommand: function () {
+                return getEnvCommand('activate', true) + ' && cd "' + path.join(vm.appPath(), vm.newAppName()) + '" ' +
                 '&& python manage.py packages -o install';
-        },
-        postExec: function (error, stdout, stderr, callback) {
-            kill(esProc.pid);
-            this.running(false);
-            this.complete(true);
-            this.success(!error);
-            callback(this);
-        }
-    })
-]);
+            },
+            postExec: function (error, stdout, stderr, callback) {
+                kill(esProc.pid);
+                this.running(false);
+                this.complete(true);
+                this.success(!error);
+                callback(this);
+            }
+        })
+    ];
+    if (applicationName !== 'arches') {
+        commands.unshift(new command({
+            description: 'Installing ' + applicationName,
+            getCommand: function () {
+                return getEnvCommand('activate', true) + ' && pip install ' + applicationName;
+            }
+        }))
+    }
+
+    return new CommandRunner(commands);
+}
 
 vm.applicationList = [
     new application({
@@ -259,14 +266,14 @@ vm.applicationList = [
         caption: 'A "blank slate" to define a custom cultural heritage inventory',
         description: 'Choosing the Blank Application allows you to design your own Arches resources for managing your cultural heritage.  Or you can import existing resource definitions and modify them for your needs.',
         image: 'assets/img/img3.jpg',
-        installer: installHip
+        installer: applicationInstallerFactory('arches')
     }),
     new application({
         name: 'Arches-HIP',
         caption: 'An application for managing immovable cultural heritage',
         description: 'This application models cultural heritage resources as: Historic Resources, Historic Resource Groups, Activities, Events, Actors (People or Groups), and Information Objects.',
         image: 'assets/img/arches-hip.png',
-        installer: installHip
+        installer: applicationInstallerFactory('arches_hip')
     })
 ];
 
