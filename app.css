@@ -2,9 +2,6 @@
 @import url("node_modules/bootstrap/dist/css/bootstrap.min.css");
 @import url("node_modules/font-awesome/css/font-awesome.min.css");
 @import url("node_modules/switchery/switchery.css");
-@import url("node_modules/bootstrap-select/dist/css/bootstrap-select.min.css");
-@import url("plugins/chosen.min.css");
-@import url("plugins/pace.min.css");
 @import url("plugins/nifty.min.css");
 
 body {

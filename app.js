@@ -1,7 +1,8 @@
-var fixPath = require('fix-path')();
+require('fix-path')();
 var $ = require('jquery');
 var _ = require('underscore');
 var jQuery = $;
+require('bootstrap');
 var ko = require('knockout');
 var shell = require('shell');
 var path = require('path');
@@ -11,20 +12,17 @@ var fs = require('fs');
 var mustache = require('mustache');
 var cp = require('child_process');
 var kill = require('tree-kill');
-require('bootstrap');
 var dependency = require('./models/dependency');
 var postgres = require('./models/postgres');
 var command = require('./models/command');
 var CommandRunner = require('./models/command-runner');
 var tab = require('./models/tab');
 var application = require('./models/application');
-var versionCompare = require('./plugins/utils').versionCompare;
 
 var vm = {};
 vm.showSplash = ko.observable(true);
 vm.postgres = new postgres();
 vm.postgres.testConnection();
-
 
 vm.openExternal = shell.openExternal;
 
@@ -52,16 +50,16 @@ vm.python = new dependency({
         if (stderr && stderr.split('Python ')[1]) {
             var versionInfo = stderr.split('Python ')[1];
             this.version(versionInfo);
-            if (versionCompare(versionInfo, '2.7.6') < 0){
+            if (this.versionCompare(versionInfo, '2.7.6') < 0){
                 this.statusText(' - Arches requires at least python version 2.7.6')
                 return false;
             }
-            if (versionCompare(versionInfo, '2.7.7') === 0 ||
-                versionCompare(versionInfo, '2.7.8') === 0){
+            if (this.versionCompare(versionInfo, '2.7.7') === 0 ||
+                this.versionCompare(versionInfo, '2.7.8') === 0){
                 this.statusText(' - Version 2.7.7 and 2.7.8 might not work as expected')
                 return false;
             }
-            return (versionCompare(versionInfo, '2.7.6') >= 0);
+            return (this.versionCompare(versionInfo, '2.7.6') >= 0);
         }
         return false;
     }
@@ -75,16 +73,16 @@ vm.java = new dependency({
       if (stderr && stderr.split('java version')[1]) {
         var versionInfo = stderr.split('"')[1];
         this.version(versionInfo);
-        if (versionCompare(versionInfo, '1.7.0_50') < 0){
+        if (this.versionCompare(versionInfo, '1.7.0_50') < 0){
             this.statusText(' - Elasticsearch requires at least JDK version 1.7.0_50')
             return false;
         }
-        if (versionCompare(versionInfo, '1.8') > 0 &&
-            versionCompare(versionInfo, '1.8.0_20') < 0 ){
+        if (this.versionCompare(versionInfo, '1.8') > 0 &&
+            this.versionCompare(versionInfo, '1.8.0_20') < 0 ){
             this.statusText(' - Elasticsearch requires at least JDK version 1.8.0_20')
             return false;
         }
-        return (versionCompare(versionInfo, '1.7.0_50') >= 0);
+        return (this.versionCompare(versionInfo, '1.7.0_50') >= 0);
       }
       return false;
     }
