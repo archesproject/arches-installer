@@ -288,14 +288,18 @@ vm.applicationList = [
     })
 ];
 
-vm.importThesauri.subscribe(function () {
+
+vm.selectedApplication = ko.observable(vm.applicationList[1]);
+ko.computed(function () {
+    vm.importThesauri();
+    vm.envPath();
+    vm.appPath();
+    vm.newAppName();
     for (var i = 0; i < vm.applicationList.length; i++) {
         vm.applicationList[i].installer = applicationInstallerFactory(vm.applicationList[i].module, vm.applicationList[i].hasDefaultAuthFiles);
     }
     vm.selectedApplication(vm.selectedApplication());
 });
-
-vm.selectedApplication = ko.observable(vm.applicationList[1]);
 
 vm.devServerRunning = ko.observable(false);
 var devServer;
