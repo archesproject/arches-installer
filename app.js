@@ -19,9 +19,24 @@ var CommandRunner = require('./models/command-runner');
 var tab = require('./models/tab');
 var application = require('./models/application');
 
+var defaults = localStorage.getItem('archesInstallerData') ? JSON.parse(localStorage.getItem('archesInstallerData')) : {
+    postgres: {
+        host: 'localhost',
+        port: '5432',
+        user: 'postgres',
+        password: 'postgis',
+        postgisTemplate: 'template_postgis_20'
+    },
+    envPath: '',
+    appPath: '',
+    newAppName: '',
+    installArchesComplete: false,
+    selectedApplication: 'arches_hip',
+    installApplicationComplete: false
+};
 var vm = {};
 vm.showSplash = ko.observable(true);
-vm.postgres = new postgres();
+vm.postgres = new postgres(defaults.postgres);
 vm.postgres.testConnection();
 
 vm.openExternal = shell.openExternal;
@@ -111,11 +126,7 @@ vm.checkDependencies = function () {
 vm.checkDependencies()
 
 var pathViewModelFactory = function(key) {
-    var pathStr = localStorage.getItem(key);
-    var viewModel = ko.observable(pathStr ? pathStr : '');
-    viewModel.subscribe(function(newValue) {
-        localStorage.setItem(key, newValue);
-    });
+    var viewModel = ko.observable(defaults[key]);
     viewModel.showDialog = function () {
         var dir = dialog.showOpenDialog({ properties: [ 'openDirectory', 'createDirectory' ]});
         if (dir) {
@@ -127,7 +138,7 @@ var pathViewModelFactory = function(key) {
 
 vm.envPath = pathViewModelFactory('envPath');
 vm.appPath = pathViewModelFactory('appPath');
-vm.newAppName = ko.observable('');
+vm.newAppName = ko.observable(defaults.newAppName);
 
 var settingsTemplate = fs.readFileSync(path.join(__dirname, '/templates/settings.py'), 'utf8');
 var updateApplicationSettings = function () {
@@ -182,6 +193,14 @@ vm.installArches = new CommandRunner([
         }
     })
 ]);
+
+if (defaults.installArchesComplete) {
+    for (var i = 0; i < vm.installArches.commands.length; i++) {
+        vm.installArches.commands[i].complete(true);
+        vm.installArches.commands[i].success(true);
+    }
+    vm.installArches.current(vm.installArches.commands.length);
+}
 
 var esProc;
 var startElasticSearch = function () {
@@ -286,8 +305,15 @@ vm.applicationList = [
     })
 ];
 
+var selectedApplicationIndex = 0;
+for (var i = 0; i < vm.applicationList.length; i++) {
+    if (vm.applicationList[i].module === defaults.selectedApplication) {
+        selectedApplicationIndex = i;
+    }
+}
 
-vm.selectedApplication = ko.observable(vm.applicationList[1]);
+vm.selectedApplication = ko.observable(vm.applicationList[selectedApplicationIndex]);
+
 ko.computed(function () {
     vm.importThesauri();
     vm.envPath();
@@ -390,17 +416,13 @@ vm.tabs.push(
         }
     }, tabDefaults()))
 );
-var installTab = new tab(_.extend({
+vm.installTab = new tab(_.extend({
     title: 'Install Application',
     description: 'Install Arches application',
     tabLink: '#install-tab'
 }, tabDefaults()));
-vm.tabs.push(installTab);
-vm.selectedApplication.subscribe(function(newValue) {
-    if (newValue) {
-        installTab.activateTab();
-    }
-});
+vm.tabs.push(vm.installTab);
+
 vm.tabs.push(
     new tab(_.extend({
         title: 'Web Server',
@@ -425,6 +447,33 @@ vm.nextTab = function () {
         vm.tabs[active.index+1].activateTab();
     }
 };
+
+ko.computed(function () {
+    var localStorageData = {
+        postgres: {
+            host: vm.postgres.host(),
+            port: vm.postgres.port(),
+            user: vm.postgres.user(),
+            password: vm.postgres.password(),
+            postgisTemplate: vm.postgres.postgisTemplate()
+        },
+        envPath: vm.envPath(),
+        appPath: vm.appPath(),
+        newAppName: vm.newAppName(),
+        installArchesComplete: vm.installArches.complete() && vm.installArches.success(),
+        selectedApplication: vm.selectedApplication().module,
+        installApplicationComplete: vm.selectedApplication().installer.complete() && vm.selectedApplication().installer.success()
+    };
+    localStorage.setItem('archesInstallerData', JSON.stringify(localStorageData));
+});
+
+if (defaults.installApplicationComplete) {
+    for (var i = 0; i < vm.selectedApplication().installer.commands.length; i++) {
+        vm.selectedApplication().installer.commands[i].complete(true);
+        vm.selectedApplication().installer.commands[i].success(true);
+    }
+    vm.selectedApplication().installer.current(vm.selectedApplication().installer.commands.length);
+}
 
 $('.app-name-input').bind('keypress', function(e) {
     if (e.which < 48 ||

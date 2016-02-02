@@ -225,7 +225,7 @@
     																	<a href="#" class="btn-link" data-bind="text: caption"></a>
     																</div>
     																<div class="col-xs-12 mar-top">
-    																	<button id="select-blank" class="btn btn-primary btn-labeled btn-lg fa fa-check" data-bind="text: 'Select '+name, click: function () { $root.selectedApplication($data); }"></button>
+    																	<button id="select-blank" class="btn btn-primary btn-labeled btn-lg fa fa-check" data-bind="text: 'Select '+name, click: function () { $root.selectedApplication($data); $root.installTab.activateTab(); }"></button>
     																</div>
     															</div>
     														</div>

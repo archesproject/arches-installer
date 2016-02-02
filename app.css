@@ -42,9 +42,6 @@ a.list-group-item:not(.active):hover {
 	border-right-width: 0px;
 }
 
-
-
-/* Form Classes                                    */
 .alert {
 	height: 60px;
 }
