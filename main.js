@@ -21,7 +21,7 @@ app.on('window-all-closed', function() {
 
 app.on('ready', function() {
     var dev = (app.getEnvName() === 'development');
-    mainWindow = new BrowserWindow({width: (dev?1900:1200), height: 850});
+    mainWindow = new BrowserWindow({width: (dev?1900:1100), height: 850});
     mainWindow.loadURL('file://' + __dirname + '/index.html');
 
     if(dev) {

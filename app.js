@@ -31,6 +31,7 @@ var defaults = localStorage.getItem('archesInstallerData') ? JSON.parse(localSto
     appPath: '',
     newAppName: '',
     installArchesComplete: false,
+    importThesauri: true,
     selectedApplication: 'arches_hip',
     installApplicationComplete: false
 };
@@ -212,7 +213,7 @@ var startElasticSearch = function () {
     return proc;
 };
 
-vm.importThesauri = ko.observable(true);
+vm.importThesauri = ko.observable(defaults.importThesauri);
 
 var importThesauriFactory = function (applicationName) {
     var authFilesDir = path.join(vm.envPath(), 'lib/python2.7/site-packages', applicationName, 'source_data/sample_data/concepts/sample_authority_files');
@@ -460,6 +461,7 @@ ko.computed(function () {
         envPath: vm.envPath(),
         appPath: vm.appPath(),
         newAppName: vm.newAppName(),
+        importThesauri: vm.importThesauri(),
         installArchesComplete: vm.installArches.complete() && vm.installArches.success(),
         selectedApplication: vm.selectedApplication().module,
         installApplicationComplete: vm.selectedApplication().installer.complete() && vm.selectedApplication().installer.success()
