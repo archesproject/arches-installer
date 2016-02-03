@@ -11,9 +11,9 @@
   "main": "main.js",
   "scripts": {
     "start": "electron main.js --env=development",
-    "package-osx": "electron-packager . ArchesInstaller --platform=darwin --arch=x64 --version=0.36.2 --icon assets/img/arches_logo.icns --out=dist",
-    "package-windows": "electron-packager . ArchesInstaller --platform=win32 --arch=all --version=0.36.2 --icon assets/img/arches_logo.ico --out=dist",
-    "package-linux": "electron-packager . ArchesInstaller --platform=linux --arch=all --version=0.36.2 --out=dist",
+    "package-osx": "electron-packager . ArchesInstaller --platform=darwin --arch=x64 --version=0.36.2 --icon assets/img/arches_logo.icns --out=dist --overwrite",
+    "package-windows": "electron-packager . ArchesInstaller --platform=win32 --arch=all --version=0.36.2 --icon assets/img/arches_logo.ico --out=dist --overwrite",
+    "package-linux": "electron-packager . ArchesInstaller --platform=linux --arch=all --version=0.36.2 --out=dist --overwrite",
     "package-all": "npm run package-osx && npm run package-windows && npm run package-linux"
   },
   "dependencies": {
