@@ -27,6 +27,7 @@ var defaults = localStorage.getItem('archesInstallerData') ? JSON.parse(localSto
         password: 'postgis',
         postgisTemplate: 'template_postgis_20'
     },
+    activeTab: null,
     envPath: '',
     appPath: '',
     newAppName: '',
@@ -36,7 +37,8 @@ var defaults = localStorage.getItem('archesInstallerData') ? JSON.parse(localSto
     installApplicationComplete: false
 };
 var vm = {};
-vm.showSplash = ko.observable(true);
+vm.showSplash = ko.observable(defaults.activeTab===null);
+vm.activeTab = ko.observable(vm.showSplash()?0:defaults.activeTab);
 vm.postgres = new postgres(defaults.postgres);
 vm.postgres.testConnection();
 
@@ -355,6 +357,7 @@ vm.tabs = [];
 var tabDefaults = function () {
     return {
         index: vm.tabs.length,
+        active: (vm.tabs.length===vm.activeTab()),
         getPrevious: function () {
             if (this.index > 0){
                 return vm.tabs[this.index-1];
@@ -365,13 +368,13 @@ var tabDefaults = function () {
             for (var i = 0; i < vm.tabs.length; i++) {
                 vm.tabs[i].active(false);
             }
-            this.active(true);;
+            this.active(true);
+            vm.activeTab(this.index);
         }
     }
 };
 vm.tabs.push(
     new tab(_.extend({
-        active: true,
         title: 'Dependencies',
         description: 'Check for Arches dependencies',
         tabLink: '#depend-tab',
@@ -458,6 +461,7 @@ ko.computed(function () {
             password: vm.postgres.password(),
             postgisTemplate: vm.postgres.postgisTemplate()
         },
+        activeTab: vm.activeTab(),
         envPath: vm.envPath(),
         appPath: vm.appPath(),
         newAppName: vm.newAppName(),
