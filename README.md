@@ -7,7 +7,7 @@ Built using [Electron](http://electron.atom.io/).
 ## Install dependencies
 
 ```sh
-npm install
+npm install 
 ```
 
 ## Run
