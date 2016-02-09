@@ -345,13 +345,22 @@ vm.devServerRunning.subscribe(function (running) {
         devServer = null;
     }
 });
-process.on('exit', function () {
+
+window.onbeforeunload = function(e) {
     if (devServer) {
+        e.returnValue = false;
+        var killCount = 0;
         for (var i = 0; i < devServer.length; i++) {
-            kill(devServer[i].pid);
+            kill(devServer[i].pid, 'SIGTERM', function () {
+                killCount += 1;
+                if (killCount === devServer.length) {
+                    devServer = null;
+                    window.close();
+                }
+            });
         }
     }
-})
+};
 
 vm.tabs = [];
 var tabDefaults = function () {
