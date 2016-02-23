@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Arches v4.0 | Installation</title>
+    <title>Arches Installer</title>
     <link href="app.css" rel="stylesheet">
 </head>
 
@@ -17,7 +17,7 @@
                             <img class="img-lg splash-logo" src="assets/img/arches_logo.png" alt="Sample Image">
                         </div>
                         <div>
-                            <h1>Welcome to Arches <small>Version 4.0.0</small></h1>
+                            <h1>Welcome to Arches <small>Version <span data-bind="text:archesVersion"></span></small></h1>
                             <p class="text-2x">
                                 This wizard will help you install Arches
                             </p>
@@ -35,7 +35,7 @@
                             <div class="panel main-panel">
                                 <div class="panel-heading">
                                     <h3 class="panel-title dependency-title">
-                                        Arches Installer <small> for v4.0 </small>
+                                        Arches Installer <small> for v<span data-bind="text: archesVersion"></span> </small>
                                     </h3>
                                 </div>
                                 <div class="panel-body tab-container">
@@ -202,6 +202,14 @@
                                                                     </dd>
                                                                 </div>
                                                                 <hr class="no-border">
+                                                                <div class="error-output" data-bind="if: installArches.complete() && !installArches.success()">
+                                                                    <div data-bind="if: installArches.currentCommand().stderr()">
+                                                                        <code data-bind="text: installArches.currentCommand().stderr()"></code>
+                                                                    </div>
+                                                                    <div data-bind="if: installArches.currentCommand().stdout()">
+                                                                        <code data-bind="text: installArches.currentCommand().stdout()"></code>
+                                                                    </div>
+                                                                </div>
                                                                 <dt data-bind="visible: installArches.complete(), text: installArches.success() ? 'Installation completed with no errors' : 'Installation failed (see above)'"></dt>
                                                             </dl>
                                                         </div>
@@ -263,8 +271,8 @@
                                                             </div>
                                                             <div class="form-group" data-bind="visible: selectedApplication().hasDefaultAuthFiles">
                                                                 <label class="col-sm-3 control-label text-semibold">Import default thesauri</label>
-                                                                <div class="col-sm-9 col-md-6 col-lg-4">
-                                                                    <span class="switchery" data-bind="css: {'on': importThesauri()}, click: function() { importThesauri(!importThesauri()); }"><small></small></span>
+                                                                <div class="col-sm-9 col-md-6 col-lg-4 switch-container">
+                                                                    <span class="switch switch-small" data-bind="css: {'on': importThesauri()}, click: function() { importThesauri(!importThesauri()); }"><small></small></span>
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -289,6 +297,14 @@
                                                                 </dd>
                                                             </div>
                                                             <hr class="no-border">
+                                                            <div class="error-output" data-bind="if: selectedApplication().installer.complete() && !selectedApplication().installer.success()">
+                                                                <div data-bind="if: selectedApplication().installer.currentCommand().stderr()">
+                                                                    <code data-bind="text: selectedApplication().installer.currentCommand().stderr()"></code>
+                                                                </div>
+                                                                <div  data-bind="if: selectedApplication().installer.currentCommand().stdout()">
+                                                                    <code data-bind="text: selectedApplication().installer.currentCommand().stdout()"></code>
+                                                                </div>
+                                                            </div>
                                                             <dt data-bind="visible: selectedApplication().installer.complete(), text: selectedApplication().installer.success() ? 'Installation completed with no errors' : 'Installation failed (see above)'"></dt>
                                                         </dl>
                                                     </div>
@@ -310,7 +326,7 @@
                                                         <a href="#" data-bind="click: function () { devServerRunning(!devServerRunning()) }">
                                                             Preview Arches
                                                             <small>(NOT recommended for production use)</small>
-                                                            <span class="switchery" data-bind="css: {'on': devServerRunning()}">
+                                                            <span class="switch switch-small" data-bind="css: {'on': devServerRunning()}">
                                                                 <small></small>
                                                             </span>
                                                         </a>

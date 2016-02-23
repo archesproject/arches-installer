@@ -6,6 +6,7 @@
         initialize: function (options) {
             this.name = options.name ? options.name : '';
             this.module = options.module ? options.module : '';
+            this.version = options.version ? options.version : '';
             this.hasDefaultAuthFiles = options.hasDefaultAuthFiles ? options.hasDefaultAuthFiles : '';
             this.caption = options.caption ? options.caption : '';
             this.description = options.description ? options.description : '';

@@ -27,6 +27,7 @@ var defaults = localStorage.getItem('archesInstallerData') ? JSON.parse(localSto
         password: 'postgis',
         postgisTemplate: 'template_postgis_20'
     },
+    dependenciesChecked: false,
     activeTab: null,
     envPath: '',
     appPath: '',
@@ -36,7 +37,9 @@ var defaults = localStorage.getItem('archesInstallerData') ? JSON.parse(localSto
     selectedApplication: 'arches_hip',
     installApplicationComplete: false
 };
-var vm = {};
+var vm = {
+    archesVersion: '3.1.2'
+};
 vm.showSplash = ko.observable(defaults.activeTab===null);
 vm.activeTab = ko.observable(vm.showSplash()?0:defaults.activeTab);
 vm.postgres = new postgres(defaults.postgres);
@@ -73,7 +76,7 @@ vm.python = new dependency({
                 return false;
             }
             if (this.versionCompare(versionInfo, '2.7.7') === 0 ||
-                this.versionCompare(versionInfo, '2.7.8') === 0){
+            this.versionCompare(versionInfo, '2.7.8') === 0){
                 this.statusText(' - Version 2.7.7 and 2.7.8 might not work as expected')
                 return false;
             }
@@ -88,25 +91,40 @@ vm.java = new dependency({
     versionCmd: 'java -version',
     helpURL: 'http://www.oracle.com/technetwork/java/javase/downloads/index.html',
     parseVersion: function (stdout, stderr) {
-      if (stderr && stderr.split('java version')[1]) {
-        var versionInfo = stderr.split('"')[1];
-        this.version(versionInfo);
-        if (this.versionCompare(versionInfo, '1.7.0_50') < 0){
-            this.statusText(' - Elasticsearch requires at least JDK version 1.7.0_50')
-            return false;
-        }
-        if (this.versionCompare(versionInfo, '1.8') > 0 &&
+        if (stderr && stderr.split('java version')[1]) {
+            var versionInfo = stderr.split('"')[1];
+            this.version(versionInfo);
+            if (this.versionCompare(versionInfo, '1.7.0_50') < 0){
+                this.statusText(' - Elasticsearch requires at least JDK version 1.7.0_50')
+                return false;
+            }
+            if (this.versionCompare(versionInfo, '1.8') > 0 &&
             this.versionCompare(versionInfo, '1.8.0_20') < 0 ){
-            this.statusText(' - Elasticsearch requires at least JDK version 1.8.0_20')
-            return false;
+                this.statusText(' - Elasticsearch requires at least JDK version 1.8.0_20')
+                return false;
+            }
+            return (this.versionCompare(versionInfo, '1.7.0_50') >= 0);
         }
-        return (this.versionCompare(versionInfo, '1.7.0_50') >= 0);
-      }
-      return false;
+        return false;
     }
 });
 
-vm.dependencies = [vm.python, vm.geos, vm.java];
+vm.psql = new dependency({
+    name: 'psql (PostgreSQL command line client)',
+    versionCmd: 'psql --version',
+    helpURL: 'http://www.postgresql.org/docs/current/static/app-psql.html',
+    parseVersion: function (stdout, stderr) {
+        if (stdout) {
+            var version = stdout.split(' ')[stdout.split(' ').length-1];
+            this.version(version);
+            return true;
+        }
+        this.statusText(' - psql not found, you may need to add it to your PATH')
+        return false;
+    }
+});
+
+vm.dependencies = [vm.python, vm.geos, vm.java, vm.psql];
 vm.dependencyCheckRunning = ko.observable(false);
 vm.checkDependencies = function () {
     var currentIndex = 0;
@@ -121,12 +139,16 @@ vm.checkDependencies = function () {
                 currentIndex += 1;
             } else {
                 vm.dependencyCheckRunning(false);
+                vm.dependenciesChecked(true);
             }
         };
         check();
     }, 1000);
 };
-vm.checkDependencies()
+vm.dependenciesChecked = ko.observable(defaults.dependenciesChecked)
+if (vm.dependenciesChecked()) {
+    vm.checkDependencies();
+}
 
 var pathViewModelFactory = function(key) {
     var viewModel = ko.observable(defaults[key]);
@@ -169,13 +191,13 @@ var getEnvCommand = function (command, sourcePrefix) {
         folder = 'Scripts';
         prefix = '';
     }
-    return prefix + path.join(vm.envPath(), folder, command);
+    return prefix + '"' + path.join(vm.envPath(), folder, command) + '"';
 };
 
 vm.installArches = new CommandRunner([
     new command({
         description: 'Installing pip',
-        command: 'python ' + path.join(__dirname, 'assets/scripts/get-pip.py'),
+        command: 'python "' + path.join(__dirname, 'assets/scripts/get-pip.py') + '"',
         sudo: process.platform!=='win32'
     }),
     new command({
@@ -192,7 +214,7 @@ vm.installArches = new CommandRunner([
     new command({
         description: 'Installing arches',
         getCommand: function () {
-            return getEnvCommand('activate', true) + ' && pip install arches';
+            return getEnvCommand('activate', true) + ' && pip install arches==' + vm.archesVersion;
         }
     })
 ]);
@@ -207,10 +229,10 @@ if (defaults.installArchesComplete) {
 
 var esProc;
 var startElasticSearch = function () {
-    var esStartCommand = path.join(vm.appPath(), vm.newAppName(), vm.newAppName(), 'elasticsearch/elasticsearch-1.4.1/bin/elasticsearch');
+    var esStartCommand = '"' + path.join(vm.appPath(), vm.newAppName(), vm.newAppName(), 'elasticsearch/elasticsearch-1.4.1/bin/elasticsearch') + '"';
     var proc = cp.spawn(esStartCommand);
     proc.on('error', function (err) {
-      console.log(err);
+        console.log(err);
     });
     return proc;
 };
@@ -227,13 +249,13 @@ var importThesauriFactory = function (applicationName) {
         }
     });
 }
-var applicationInstallerFactory = function (applicationName, hasDefaultAuthFiles) {
+var applicationInstallerFactory = function (applicationName, version, hasDefaultAuthFiles) {
     var commands = [
         new command({
             description: 'Creating application',
             getCommand: function () {
                 return getEnvCommand('activate', true) + ' && cd "' + vm.appPath() + '" ' +
-                '&& arches-app create ' + vm.newAppName() + ' --app ' + applicationName;
+                '&& ' + (process.platform==='win32' ? 'python ' + getEnvCommand('arches-app') : 'arches-app') + ' create ' + vm.newAppName() + ' --app ' + applicationName;
             },
             postExec: function (error, stdout, stderr, callback) {
                 updateApplicationSettings();
@@ -275,7 +297,7 @@ var applicationInstallerFactory = function (applicationName, hasDefaultAuthFiles
         commands.unshift(new command({
             description: 'Installing ' + applicationName,
             getCommand: function () {
-                return getEnvCommand('activate', true) + ' && pip install ' + applicationName;
+                return getEnvCommand('activate', true) + ' && pip install ' + applicationName + '==' + version;
             }
         }))
     }
@@ -291,20 +313,22 @@ vm.applicationList = [
     new application({
         name: 'Blank Arches',
         module: 'arches',
+        version: vm.archesVersion,
         hasDefaultAuthFiles: false,
         caption: 'A "blank slate" to define a custom cultural heritage inventory',
         description: 'Choosing the Blank Application allows you to design your own Arches resources for managing your cultural heritage.  Or you can import existing resource definitions and modify them for your needs.',
         image: 'assets/img/img3.jpg',
-        installer: applicationInstallerFactory('arches', false)
+        installer: applicationInstallerFactory('arches',  vm.archesVersion, false)
     }),
     new application({
         name: 'Arches-HIP',
         module: 'arches_hip',
+        version: '1.0.4',
         hasDefaultAuthFiles: true,
         caption: 'An application for managing immovable cultural heritage',
         description: 'This application models cultural heritage resources as: Historic Resources, Historic Resource Groups, Activities, Events, Actors (People or Groups), and Information Objects.',
         image: 'assets/img/arches-hip.png',
-        installer: applicationInstallerFactory('arches_hip', true)
+        installer: applicationInstallerFactory('arches_hip', '1.0.4', true)
     })
 ];
 
@@ -323,7 +347,7 @@ ko.computed(function () {
     vm.appPath();
     vm.newAppName();
     for (var i = 0; i < vm.applicationList.length; i++) {
-        vm.applicationList[i].installer = applicationInstallerFactory(vm.applicationList[i].module, vm.applicationList[i].hasDefaultAuthFiles);
+        vm.applicationList[i].installer = applicationInstallerFactory(vm.applicationList[i].module, vm.applicationList[i].version, vm.applicationList[i].hasDefaultAuthFiles);
     }
     vm.selectedApplication(vm.selectedApplication());
 });
@@ -470,6 +494,7 @@ ko.computed(function () {
             password: vm.postgres.password(),
             postgisTemplate: vm.postgres.postgisTemplate()
         },
+        dependenciesChecked: vm.dependenciesChecked(),
         activeTab: vm.activeTab(),
         envPath: vm.envPath(),
         appPath: vm.appPath(),
@@ -495,8 +520,8 @@ $('.app-name-input').bind('keypress', function(e) {
         (e.which > 57 && e.which < 65) ||
         (e.which > 90 && e.which < 97 && e.which !==95) ||
         e.which > 122) {
-        e.preventDefault();
-    }
-});
+            e.preventDefault();
+        }
+    });
 
-ko.applyBindings(vm);
+    ko.applyBindings(vm);

@@ -11,10 +11,12 @@
   "main": "main.js",
   "scripts": {
     "start": "electron main.js --env=development",
-    "package-osx": "electron-packager . ArchesInstaller --platform=darwin --arch=x64 --version=0.36.2 --icon assets/img/arches_logo.icns --out=dist --overwrite",
-    "package-windows": "electron-packager . ArchesInstaller --platform=win32 --arch=all --version=0.36.2 --icon assets/img/arches_logo.ico --out=dist --overwrite",
-    "package-linux": "electron-packager . ArchesInstaller --platform=linux --arch=all --version=0.36.2 --out=dist --overwrite",
-    "package-all": "npm run package-osx && npm run package-windows && npm run package-linux"
+    "package-osx": "electron-packager . ArchesInstaller --platform=darwin --arch=x64 --version=0.36.2 --icon assets/img/arches_logo.icns --out=dist --ignore=\"dist/ArchesInstaller*|node_modules/electron-builder\" --overwrite",
+    "package-windows": "electron-packager . ArchesInstaller --platform=win32 --arch=all --version=0.36.2 --icon assets/img/arches_logo.ico --out=dist --ignore=\"dist/ArchesInstaller*|node_modules/electron-builder\" --overwrite",
+    "package-linux": "electron-packager . ArchesInstaller --platform=linux --arch=all --version=0.36.2 --out=dist --ignore=\"dist/ArchesInstaller*|node_modules/electron-builder\" --overwrite",
+    "package-all": "npm run package-osx && npm run package-windows && npm run package-linux",
+    "build-osx": "npm run package-osx && electron-builder dist/ArchesInstaller-darwin-x64/ArchesInstaller.app --platform=osx --out=dist/ArchesInstaller-darwin-x64",
+    "build-windows": "npm run package-windows && electron-builder dist/ArchesInstaller-win32-x64 --platform=win --out=dist/ArchesInstaller-win32-x64"
   },
   "dependencies": {
     "backbone": "^1.2.3",
@@ -28,12 +30,40 @@
     "knockout": "^3.4.0",
     "mustache": "^2.2.1",
     "pg": "^4.4.3",
-    "switchery": "0.0.2",
     "tree-kill": "^1.0.0",
     "underscore": "^1.8.3"
   },
   "devDependencies": {
+    "electron-builder": "^2.7.2",
     "electron-packager": "^5.2.0",
     "electron-prebuilt": "^0.36.0"
+  },
+  "builder": {
+    "osx": {
+      "title": "ArchesInstaller",
+      "background": "assets/img/arches_logo.png",
+      "icon": "assets/img/arches_logo.icns",
+      "icon-size": 80,
+      "contents": [
+        {
+          "x": 438,
+          "y": 344,
+          "type": "link",
+          "path": "/Applications"
+        },
+        {
+          "x": 192,
+          "y": 344,
+          "type": "file"
+        }
+      ]
+    },
+    "win": {
+      "title": "ArchesInstaller",
+      "version": "0.1.0",
+      "publisher": "Publisher Info",
+      "icon": "assets/img/arches_logo.ico",
+      "verbosity": 1
+    }
   }
 }
