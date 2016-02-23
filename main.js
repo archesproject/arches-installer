@@ -3,7 +3,7 @@ const app = electron.app;
 const BrowserWindow = electron.BrowserWindow;
 
 var mainWindow = null;
-var env = 'development';
+var env = 'production';
 process.argv.forEach(function (val, index, array) {
     var argvItem = val.split('=');
     if (argvItem[0]==='--env') {
