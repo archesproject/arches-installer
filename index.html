@@ -202,7 +202,7 @@
                                                                     </dd>
                                                                 </div>
                                                                 <hr class="no-border">
-                                                                <div class="error-output" data-bind="if: installArches.complete() && !installArches.success()">
+                                                                <div class="error-output" data-bind="if: installArches.complete() && !installArches.success() && installArches.currentCommand()">
                                                                     <div data-bind="if: installArches.currentCommand().stderr()">
                                                                         <code data-bind="text: installArches.currentCommand().stderr()"></code>
                                                                     </div>
@@ -297,7 +297,7 @@
                                                                 </dd>
                                                             </div>
                                                             <hr class="no-border">
-                                                            <div class="error-output" data-bind="if: selectedApplication().installer.complete() && !selectedApplication().installer.success()">
+                                                            <div class="error-output" data-bind="if: selectedApplication().installer.complete() && !selectedApplication().installer.success() && selectedApplication().installer.currentCommand()">
                                                                 <div data-bind="if: selectedApplication().installer.currentCommand().stderr()">
                                                                     <code data-bind="text: selectedApplication().installer.currentCommand().stderr()"></code>
                                                                 </div>
