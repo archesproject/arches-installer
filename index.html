@@ -202,13 +202,8 @@
                                                                     </dd>
                                                                 </div>
                                                                 <hr class="no-border">
-                                                                <div class="error-output" data-bind="if: installArches.complete() && !installArches.success() && installArches.currentCommand()">
-                                                                    <div data-bind="if: installArches.currentCommand().stderr()">
-                                                                        <code data-bind="text: installArches.currentCommand().stderr()"></code>
-                                                                    </div>
-                                                                    <div data-bind="if: installArches.currentCommand().stdout()">
-                                                                        <code data-bind="text: installArches.currentCommand().stdout()"></code>
-                                                                    </div>
+                                                                <div data-bind="if: installArches.complete() && !installArches.success() && installArches.currentCommand()">
+                                                                    <pre class="error-output"><code data-bind="text: installArches.currentCommand().stderr()"></code><code data-bind="text: installArches.currentCommand().stdout()"></code></pre>
                                                                 </div>
                                                                 <dt data-bind="visible: installArches.complete(), text: installArches.success() ? 'Installation completed with no errors' : 'Installation failed (see above)'"></dt>
                                                             </dl>
@@ -297,13 +292,8 @@
                                                                 </dd>
                                                             </div>
                                                             <hr class="no-border">
-                                                            <div class="error-output" data-bind="if: selectedApplication().installer.complete() && !selectedApplication().installer.success() && selectedApplication().installer.currentCommand()">
-                                                                <div data-bind="if: selectedApplication().installer.currentCommand().stderr()">
-                                                                    <code data-bind="text: selectedApplication().installer.currentCommand().stderr()"></code>
-                                                                </div>
-                                                                <div  data-bind="if: selectedApplication().installer.currentCommand().stdout()">
-                                                                    <code data-bind="text: selectedApplication().installer.currentCommand().stdout()"></code>
-                                                                </div>
+                                                            <div data-bind="if: selectedApplication().installer.complete() && !selectedApplication().installer.success() && selectedApplication().installer.currentCommand()">
+                                                                <pre class="error-output"><code data-bind="text: selectedApplication().installer.currentCommand().stderr()"></code><code data-bind="text: selectedApplication().installer.currentCommand().stdout()"></code></pre>
                                                             </div>
                                                             <dt data-bind="visible: selectedApplication().installer.complete(), text: selectedApplication().installer.success() ? 'Installation completed with no errors' : 'Installation failed (see above)'"></dt>
                                                         </dl>

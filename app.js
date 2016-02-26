@@ -255,7 +255,7 @@ var applicationInstallerFactory = function (applicationName, version, hasDefault
             description: 'Creating application',
             getCommand: function () {
                 return getEnvCommand('activate', true) + ' && cd "' + vm.appPath() + '" ' +
-                '&& ' + (process.platform==='win32' ? 'python ' + getEnvCommand('arches-app') : 'arches-app') + ' create ' + vm.newAppName() + ' --app ' + applicationName;
+                '&& ' + (process.platform==='win32' ? getEnvCommand('python') + ' ' + getEnvCommand('arches-app') : 'arches-app') + ' create ' + vm.newAppName() + ' --app ' + applicationName;
             },
             postExec: function (error, stdout, stderr, callback) {
                 updateApplicationSettings();
