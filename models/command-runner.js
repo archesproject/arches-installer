@@ -1,8 +1,12 @@
 (function () {
     var ko = require('knockout');
+    var shell = require('shell');
+    var mustache = require('mustache');
+    var gist = require('octonode').client().gist();
 
-    var CommandRunner = function(commands, postExec) {
+    var CommandRunner = function(name, commands, postExec) {
         var self = this;
+        this.name = name;
         this.postExec = postExec;
         this.current = ko.observable(0);
         this.running = ko.observable(false);
@@ -83,6 +87,33 @@
                     }
                 });
             }
+        },
+
+        createGHIssue: function () {
+            var errorInfo = {
+                name: this.name,
+                step: this.current(),
+                description: this.currentCommand().description,
+                version: require('../package.json').version,
+                platform: process.platform,
+                arch: process.arch
+            };
+
+            var description = mustache.render("Arches Installer v{{version}}, failed installing {{name}} on step {{step}} ({{description}}) platform: {{platform}} {{arch}}", errorInfo);
+            gist.create({
+                "description": description,
+                "public": true,
+                "files": {
+                    "output.txt": {
+                        "content": this.currentCommand().stderr() + '\n' + this.currentCommand().stdout()
+                    }
+                }
+            }, function(err, data) {
+                if (!err) {
+                    var issueUrl = encodeURI('https://github.com/archesproject/arches-installer/issues/new?title=' + description + '&body=see output here: ' + data.html_url);
+                    shell.openExternal(issueUrl);
+                }
+            });
         }
     };
 

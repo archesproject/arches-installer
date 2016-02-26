@@ -194,7 +194,7 @@ var getEnvCommand = function (command, sourcePrefix) {
     return prefix + '"' + path.join(vm.envPath(), folder, command) + '"';
 };
 
-vm.installArches = new CommandRunner([
+vm.installArches = new CommandRunner('Arches framework', [
     new command({
         description: 'Installing pip',
         command: 'python "' + path.join(__dirname, 'assets/scripts/get-pip.py') + '"',
@@ -302,7 +302,7 @@ var applicationInstallerFactory = function (applicationName, version, hasDefault
         }))
     }
 
-    return new CommandRunner(commands, function () {
+    return new CommandRunner(applicationName, commands, function () {
         if (esProc) {
             kill(esProc.pid);
         }
@@ -516,12 +516,9 @@ if (defaults.installApplicationComplete) {
 }
 
 $('.app-name-input').bind('keypress', function(e) {
-    if (e.which < 48 ||
-        (e.which > 57 && e.which < 65) ||
-        (e.which > 90 && e.which < 97 && e.which !==95) ||
-        e.which > 122) {
-            e.preventDefault();
-        }
-    });
+    if (e.which < 48 || (e.which > 57 && e.which < 65) || (e.which > 90 && e.which < 97 && e.which !==95) || e.which > 122) {
+        e.preventDefault();
+    }
+});
 
-    ko.applyBindings(vm);
+ko.applyBindings(vm);

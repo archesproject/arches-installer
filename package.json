@@ -29,6 +29,7 @@
     "knex": "^0.9.0",
     "knockout": "^3.4.0",
     "mustache": "^2.2.1",
+    "octonode": "^0.7.4",
     "pg": "^4.4.3",
     "tree-kill": "^1.0.0",
     "underscore": "^1.8.3"
