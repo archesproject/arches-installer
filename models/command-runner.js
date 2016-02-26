@@ -92,7 +92,7 @@
         createGHIssue: function () {
             var errorInfo = {
                 name: this.name,
-                step: this.current(),
+                step: this.current()+1,
                 description: this.currentCommand().description,
                 version: require('../package.json').version,
                 platform: process.platform,
