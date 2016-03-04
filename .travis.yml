@@ -1,6 +1,17 @@
 language: node_js
+
 node_js:
   - "stable"
+
 notifications:
   slack:
     secure: V1juhiQ2aw4Snpxv9VK25ANhs0Gq/jUJs3mPhhgobUw/J9ClN5ynFhOALzYiY2+dFAo2eyL1lGGkFhDxfw2suQwqqaylT9k5Jm7TKDdntbbBHleElCZzEuJuWMQwK3bfezCAQCp8LdGhAhHy9RvUgW9Nvve2L/K/Yp1f7ZQiH/9XjardjmDM98PWKVLBpuUMDubxcm/FXIxNw8e52FLQJ4DKDjzgqTsUUmF1w6TZbdkZJ+/CFTxnICbFX80g4ycKDdnyrf9KPDtP5OSkK7wDP2LnMbMwZWSRPinMjKMDG8E19LwoASRfywYusYgcm7STtXKi3jAsjOIZnuzA15jZpDO4lrJBAuUtv3AjpU4gX2wbGnd9U70KXfhG2iYBXQO8a+eQRgfVupxJqc2Eaj5cGEtQpLpRxB++yWeC5RXa11aR1ODn07GYs3iEWTaLXva0JVg8JnS0a1ToBC5xETZDr8DKNyTQAdszsTgdcZgCkATEyNS0y5L9I3cTiyXJg4KGHETmUmV3E0H5RL2Ml6jD5QYNEac+wNkvFHVqfJHV+ee+rJKXhmOIoaEyhyetrDgYTM/5hVzuyTgqhQDo9v33GN+DTPYfNsZam79xHKIyYQt9quOaXWGyOLIZ1e3SJ+RNRtdcnUAB+hGCaM92cRe+fy9n+fjE2ze+Auke0GY0tWg=
+
+addons:
+  apt:
+    packages:
+      - xvfb
+
+install:
+  - export DISPLAY=':99.0'
+  - Xvfb :99 -screen 0 1024x768x24 > /dev/null 2>&1 &
