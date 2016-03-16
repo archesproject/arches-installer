@@ -2,6 +2,7 @@
 @import url("node_modules/bootstrap/dist/css/bootstrap.min.css");
 @import url("node_modules/font-awesome/css/font-awesome.min.css");
 @import url("plugins/nifty.min.css");
+@import url("plugins/chosen.min.css");
 
 body {
     background: #f9f9f9;
@@ -317,7 +318,7 @@ a.list-group-item:not(.active):hover {
     z-index: 500;
 }
 
-#install-tab .btn-file-wrapper {
+#web-tab .btn-file-wrapper, #install-tab .btn-file-wrapper {
     left: 5px;
 }
 
@@ -333,7 +334,7 @@ input.form-control.file-input-mask {
     margin-left: -78px;
 }
 
-#install-tab input.form-control.file-input-mask {
+#web-tab input.form-control.file-input-mask , #install-tab input.form-control.file-input-mask {
     right: 0;
     top: -5px;
     position: absolute;
@@ -471,4 +472,12 @@ input.form-control.file-input-mask {
 
 .error-output code {
     display: block;
+}
+
+.chosen-wrapper {
+    margin-top: 4px;
+}
+
+.error {
+    color: rgb(193, 0, 0);
 }

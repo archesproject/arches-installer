@@ -22,6 +22,7 @@
     "backbone": "^1.2.3",
     "bookshelf": "^0.9.1",
     "bootstrap": "^3.3.6",
+    "chosen-npm": "^1.4.2",
     "electron-sudo": "^3.0.2",
     "fix-path": "^1.1.0",
     "font-awesome": "^4.5.0",

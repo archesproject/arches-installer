@@ -296,7 +296,7 @@
                                                             </div>
                                                             <hr class="no-border">
                                                             <div data-bind="if: selectedApplication().installer.complete() && !selectedApplication().installer.success() && selectedApplication().installer.currentCommand()">
-                                                                <pre class="error-output"><code data-bind="text: selectedApplication().installer.currentCommand().stderr()"></code><code data-bind="text: selectedApplication().installer.currentCommand().stdout()"></code></pre>
+                                                                <pre class="error-output"><code data-bind="text: 'ERROR: ' + selectedApplication().installer.currentCommand().stderr()" class="error"></code><span data-bind="text: '\n\nFull Output:\n\n'"></span><code data-bind="text: selectedApplication().installer.currentCommand().stdout()"></code></pre>
                                                                 <div>
                                                                     <a href="#" data-bind="click: function () { openExternal('https://github.com/archesproject/arches-installer') }" class="text-primary">Find help for common errors here.</a> If you're still having trouble installing, <a href="#" data-bind="click: function () { selectedApplication().installer.createGHIssue() }" class="text-primary">click here to create an issue on <i class="fa fa-github"></i> GitHub</a>
                                                                 </div>
@@ -307,6 +307,40 @@
                                                 </div>
                                             </div>
                                             <div id="web-tab" class="tab-pane fade active in" data-bind="visible: (getActiveTab().title==='Web Server')">
+                                                <h4 class="text-thin">Application Settings</h4>
+                                                <form class="form-horizontal">
+                                                    <div class="panel-body">
+                                                        <div class="form-group">
+                                                            <label class="col-sm-3 control-label text-semibold">Uploaded Media Folder (Optional)</label>
+                                                            <div class="col-sm-9 col-md-8 col-lg-4">
+                                                                <div class="input-group" data-bind="click: function () { mediaPath.showDialog(); }">
+                                                                    <span class="input-group-btn btn-file-wrapper">
+                                                                        <span class="btn btn-default btn-file">
+                                                                            Browse...
+                                                                        </span>
+                                                                    </span>
+                                                                    <input readonly data-bind="value: mediaPath, attr: {'placeholder': 'Uploaded media folder (optional)...'}" class="form-control file-input-mask">
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label class="col-sm-3 control-label text-semibold">Time Zone</label>
+                                                            <div class="col-sm-9 col-md-8 col-lg-4 chosen-wrapper">
+                                                                <div class="input-group">
+                                                                    <select class="chosen" style="width:300px;" data-bind="value: timezone, chosen: true, options: timezones"></select>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label class="col-sm-3 control-label text-semibold">Default Language</label>
+                                                            <div class="col-sm-9 col-md-8 col-lg-4 chosen-wrapper">
+                                                                <div class="input-group">
+                                                                    <select class="chosen" style="width:300px;" data-bind="value: defaultLanguage, chosen: true, options: languages, optionsText: 'text', optionsValue: 'value'"></select>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </form>
                                                 <h4 class="text-thin">Configure your web server</h4>
                                                 <div id="web-arches-app-alert" class="panel install-card-alert"></div>
                                                 <div class="web-tab-main">

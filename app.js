@@ -12,12 +12,25 @@ var fs = require('fs');
 var mustache = require('mustache');
 var cp = require('child_process');
 var kill = require('tree-kill');
+var chosen = require('chosen-npm/public/chosen.jquery.min');
 var dependency = require('./models/dependency');
 var postgres = require('./models/postgres');
 var command = require('./models/command');
 var CommandRunner = require('./models/command-runner');
 var tab = require('./models/tab');
 var application = require('./models/application');
+var languages = require('./assets/data/languages.json').languages;
+var timezones = require('./assets/data/timezones.json').timezones;
+
+ko.bindingHandlers.chosen = {
+  init: function(element) {
+    $(element).addClass('chzn-select');
+    $(element).chosen();
+  },
+  update: function(element) {
+    $(element).trigger('liszt:updated');
+  }
+};
 
 var defaults = localStorage.getItem('archesInstallerData') ? JSON.parse(localStorage.getItem('archesInstallerData')) : {
     postgres: {
@@ -31,14 +44,21 @@ var defaults = localStorage.getItem('archesInstallerData') ? JSON.parse(localSto
     activeTab: null,
     envPath: '',
     appPath: '',
+    mediaPath: '',
     newAppName: '',
     installArchesComplete: false,
     importThesauri: true,
     selectedApplication: 'arches_hip',
-    installApplicationComplete: false
+    installApplicationComplete: false,
+    defaultLanguage: 'en-US',
+    timezone: 'America/Chicago'
 };
 var vm = {
-    archesVersion: '3.1.2'
+    archesVersion: '3.1.2',
+    languages: languages,
+    timezones: timezones,
+    defaultLanguage: ko.observable(defaults.defaultLanguage),
+    timezone: ko.observable(defaults.timezone),
 };
 vm.showSplash = ko.observable(defaults.activeTab===null);
 vm.activeTab = ko.observable(vm.showSplash()?0:defaults.activeTab);
@@ -49,7 +69,7 @@ vm.openExternal = shell.openExternal;
 
 vm.geos = new dependency({
     name: 'GEOS',
-    versionCmd: process.platform==='win32' ? 'IF EXIST C:/OSGeo4W64/bin/geos_c.dll ECHO True' : 'geos-config --version',
+    versionCmd: process.platform==='win32' ? 'IF EXIST C:/OSGeo4W' + ((process.arch==='x64')?'64':'') + '/bin/geos_c.dll ECHO True' : 'geos-config --version',
     helpURL: 'https://trac.osgeo.org/geos/',
     parseVersion: function (stdout) {
         if (process.platform==='win32') {
@@ -163,6 +183,7 @@ var pathViewModelFactory = function(key) {
 
 vm.envPath = pathViewModelFactory('envPath');
 vm.appPath = pathViewModelFactory('appPath');
+vm.mediaPath = pathViewModelFactory('mediaPath');
 vm.newAppName = ko.observable(defaults.newAppName);
 
 var settingsTemplate = fs.readFileSync(path.join(__dirname, '/templates/settings.py'), 'utf8');
@@ -170,11 +191,16 @@ var updateApplicationSettings = function () {
     if (vm.appPath() !== '') {
         var filePath = path.join(vm.appPath(), vm.newAppName(), vm.newAppName(), 'settings_local.py');
         var content = mustache.render(settingsTemplate, {
+            windows: (process.platform === 'win32'),
+            x64: (process.arch === 'x64'),
             host: vm.postgres.host(),
             port: vm.postgres.port(),
             user: vm.postgres.user(),
             password: vm.postgres.password(),
-            postgisTemplate: vm.postgres.postgisTemplate()
+            postgisTemplate: vm.postgres.postgisTemplate(),
+            mediaPath: (vm.mediaPath() == '') ? false : vm.mediaPath(),
+            defaultLanguage: vm.defaultLanguage(),
+            timezone: vm.timezone()
         });
         fs.writeFile(filePath, content, function(err) {
             if(err) {
@@ -184,6 +210,16 @@ var updateApplicationSettings = function () {
     }
 };
 
+_.each([
+    vm.mediaPath,
+    vm.defaultLanguage,
+    vm.timezone
+], function(obs) {
+    obs.subscribe(function() {
+        updateApplicationSettings();
+    });
+});
+
 var getEnvCommand = function (command, sourcePrefix) {
     var folder = 'bin';
     var prefix = sourcePrefix?'source ':'';
@@ -191,7 +227,11 @@ var getEnvCommand = function (command, sourcePrefix) {
         folder = 'Scripts';
         prefix = '';
     }
-    return prefix + '"' + path.join(vm.envPath(), folder, command) + '"';
+    var fullCommand = path.join(vm.envPath(), folder, command);
+    if (process.platform==='win32') {
+        fullCommand = '"' + fullCommand + '"';
+    }
+    return prefix + fullCommand;
 };
 
 vm.installArches = new CommandRunner('Arches framework', [
@@ -229,7 +269,10 @@ if (defaults.installArchesComplete) {
 
 var esProc;
 var startElasticSearch = function () {
-    var esStartCommand = '"' + path.join(vm.appPath(), vm.newAppName(), vm.newAppName(), 'elasticsearch/elasticsearch-1.4.1/bin/elasticsearch') + '"';
+    var esStartCommand = path.join(vm.appPath(), vm.newAppName(), vm.newAppName(), 'elasticsearch/elasticsearch-1.4.1/bin/elasticsearch');
+    if (process.platform==='win32') {
+        esStartCommand = '"' + esStartCommand + '"';
+    }
     var proc = cp.spawn(esStartCommand);
     proc.on('error', function (err) {
         console.log(err);
@@ -498,11 +541,14 @@ ko.computed(function () {
         activeTab: vm.activeTab(),
         envPath: vm.envPath(),
         appPath: vm.appPath(),
+        mediaPath: vm.mediaPath(),
         newAppName: vm.newAppName(),
         importThesauri: vm.importThesauri(),
         installArchesComplete: vm.installArches.complete() && vm.installArches.success(),
         selectedApplication: vm.selectedApplication().module,
-        installApplicationComplete: vm.selectedApplication().installer.complete() && vm.selectedApplication().installer.success()
+        installApplicationComplete: vm.selectedApplication().installer.complete() && vm.selectedApplication().installer.success(),
+        defaultLanguage: vm.defaultLanguage(),
+        timezone: vm.timezone()
     };
     localStorage.setItem('archesInstallerData', JSON.stringify(localStorageData));
 });
